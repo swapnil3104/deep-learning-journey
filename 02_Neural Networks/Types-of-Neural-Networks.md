@@ -71,13 +71,13 @@ A network can belong to more than one category. For example, a deep CNN is both 
 
 A perceptron is one of the earliest trainable artificial-neuron models. It computes a weighted sum and applies a threshold-like decision function.
 
-\[
+$$
 z=\sum_{i=1}^{n} w_i x_i+b
-\]
+$$
 
-\[
+$$
 \hat{y}=\begin{cases}1 & z\geq 0\\0 & z<0\end{cases}
-\]
+$$
 
 ### How it works
 
@@ -113,11 +113,11 @@ Each layer transforms the previous layer's output. The model uses the final laye
 
 An MLP is a feedforward neural network with an input layer, one or more hidden layers, and an output layer. Its layers are commonly fully connected.
 
-For a layer \(l\):
+For a layer $l$:
 
-\[
+$$
 \mathbf{a}^{[l]}=f\left(\mathbf{W}^{[l]}\mathbf{a}^{[l-1]}+\mathbf{b}^{[l]}\right)
-\]
+$$
 
 ### How it works
 
@@ -159,11 +159,11 @@ Early convolutional layers can learn simple patterns such as edges and textures.
 
 RNNs process sequential inputs while maintaining a hidden state that carries information from earlier time steps.
 
-\[
+$$
 h_t=f(W_xx_t+W_hh_{t-1}+b)
-\]
+$$
 
-Here, \(x_t\) is the current input and \(h_{t-1}\) is the previous hidden state.
+Here, $x_t$ is the current input and $h_{t-1}$ is the previous hidden state.
 
 ### How it works
 
@@ -235,11 +235,11 @@ A token can use information from other relevant tokens instead of relying only o
 
 A common scaled dot-product attention formula is:
 
-\[
+$$
 Attention(Q,K,V)=softmax\left(\frac{QK^T}{\sqrt{d_k}}\right)V
-\]
+$$
 
-Here, \(Q\), \(K\), and \(V\) are query, key, and value representations.
+Here, $Q$, $K$, and $V$ are query, key, and value representations.
 
 ### Common Transformer styles
 
@@ -263,9 +263,9 @@ Input → Encoder → Latent representation → Decoder → Reconstruction
 
 ### How it works
 
-1. The encoder maps input \(x\) to latent representation \(z\).
-2. The decoder maps \(z\) to reconstruction \(\hat{x}\).
-3. A reconstruction loss compares \(x\) and \(\hat{x}\).
+1. The encoder maps input $x$ to latent representation $z$.
+2. The decoder maps $z$ to reconstruction $\hat{x}$.
+3. A reconstruction loss compares $x$ and $\hat{x}$.
 4. Training updates the encoder and decoder to reduce that loss.
 
 **Applications:** Dimensionality reduction, representation learning, denoising, and some anomaly-detection workflows.
@@ -390,11 +390,11 @@ An RBF network often uses a hidden layer of radial basis functions, such as Gaus
 
 A Gaussian radial basis function can be written as:
 
-\[
+$$
 \phi(x)=\exp\left(-\frac{\|x-c\|^2}{2\sigma^2}\right)
-\]
+$$
 
-Here, \(c\) is a center and \(\sigma\) controls the width.
+Here, $c$ is a center and $\sigma$ controls the width.
 
 ### How it works
 

@@ -152,9 +152,9 @@ Each circle represents a computational unit. Connections carry weighted values b
 
 ### Main components
 
-- **Inputs (\(x\)):** Features provided to the network.
-- **Weights (\(w\)):** Learnable values that scale input signals.
-- **Bias (\(b\)):** A learnable offset.
+- **Inputs ($x$):** Features provided to the network.
+- **Weights ($w$):** Learnable values that scale input signals.
+- **Bias ($b$):** A learnable offset.
 - **Activation function:** Introduces nonlinearity.
 - **Loss function:** Measures how far predictions are from target values.
 - **Optimizer:** Updates weights and biases to reduce the loss.
@@ -167,41 +167,41 @@ A basic artificial neuron performs two main operations.
 
 ### Step 1: Calculate the weighted sum
 
-For inputs \(x_1, x_2, \ldots, x_n\), weights \(w_1, w_2, \ldots, w_n\), and bias \(b\):
+For inputs $x_1, x_2, \ldots, x_n$, weights $w_1, w_2, \ldots, w_n$, and bias $b$:
 
-\[
+$$
 z = \sum_{i=1}^{n} w_i x_i + b
-\]
+$$
 
 In vector form:
 
-\[
+$$
 z = \mathbf{w}^{T}\mathbf{x} + b
-\]
+$$
 
 ### Step 2: Apply an activation function
 
-\[
+$$
 a = f(z)
-\]
+$$
 
-Here, \(f\) is an activation function, and \(a\) is the neuron's output.
+Here, $f$ is an activation function, and $a$ is the neuron's output.
 
 ### Small example
 
 Suppose:
 
-- \(x_1 = 2\), \(x_2 = 3\)
-- \(w_1 = 0.4\), \(w_2 = 0.2\)
-- \(b = -0.5\)
+- $x_1 = 2$, $x_2 = 3$
+- $w_1 = 0.4$, $w_2 = 0.2$
+- $b = -0.5$
 
 Then:
 
-\[
+$$
 z = (2 \times 0.4) + (3 \times 0.2) - 0.5 = 0.9
-\]
+$$
 
-If the activation is ReLU, \(f(z)=\max(0,z)\), the output is \(0.9\).
+If the activation is ReLU, $f(z)=\max(0,z)$, the output is $0.9$.
 
 The weights determine how strongly each input contributes, while the bias shifts the result. During training, these values are adjusted.
 
@@ -211,11 +211,11 @@ Activation functions let networks represent nonlinear relationships. Without non
 
 | Function | Formula | Common use | Important note |
 |---|---|---|---|
-| Sigmoid | \(1/(1+e^{-z})\) | Binary probability output | Can saturate and produce small gradients |
-| Tanh | \(\tanh(z)\) | Some recurrent networks | Output ranges from -1 to 1; can saturate |
-| ReLU | \(\max(0,z)\) | Hidden layers in many networks | Simple and efficient; some units can stop activating |
-| Leaky ReLU | \(\max(\alpha z,z)\) | Some hidden layers | Keeps a small negative-side slope |
-| Softmax | \(e^{z_i}/\sum_j e^{z_j}\) | Multiclass output | Converts logits to a probability distribution |
+| Sigmoid | $$1/(1+e^{-z})$$ | Binary probability output | Can saturate and produce small gradients |
+| Tanh | $$\tanh(z)$$ | Some recurrent networks | Output ranges from -1 to 1; can saturate |
+| ReLU | $$\max(0,z)$$ | Hidden layers in many networks | Simple and efficient; some units can stop activating |
+| Leaky ReLU | $$\max(\alpha z,z)$$ | Some hidden layers | Keeps a small negative-side slope |
+| Softmax | $$e^{z_i}/\sum_j e^{z_j}$$ | Multiclass output | Converts logits to a probability distribution |
 
 ### Choosing an output activation
 
@@ -236,16 +236,16 @@ The process of calculating outputs from inputs is called **forward propagation**
 5. Pass the results through subsequent layers.
 6. Produce the final output.
 
-For layer \(l\), a common notation is:
+For layer $l$, a common notation is:
 
-\[
+$$
 \mathbf{z}^{[l]} =
 \mathbf{W}^{[l]}\mathbf{a}^{[l-1]}+\mathbf{b}^{[l]}
-\]
+$$
 
-\[
+$$
 \mathbf{a}^{[l]} = f^{[l]}(\mathbf{z}^{[l]})
-\]
+$$
 
 The output of one layer becomes the input to the next. In a trained network, these calculations produce a prediction; they do not by themselves improve the model.
 
@@ -291,17 +291,17 @@ The network generally does not memorize a fixed set of rules supplied by a progr
 
 For regression, mean squared error (MSE) is common:
 
-\[
+$$
 MSE = \frac{1}{N}\sum_{i=1}^{N}(y_i-\hat{y}_i)^2
-\]
+$$
 
-For classification, cross-entropy is commonly used. For a single correct class \(y\), multiclass cross-entropy can be written as:
+For classification, cross-entropy is commonly used. For a single correct class $y$, multiclass cross-entropy can be written as:
 
-\[
+$$
 L = -\sum_{k=1}^{K} y_k \log(\hat{p}_k)
-\]
+$$
 
-where \(y_k\) is the target indicator and \(\hat{p}_k\) is the predicted probability for class \(k\).
+where $y_k$ is the target indicator and $\hat{p}_k$ is the predicted probability for class $k$.
 
 ### 10.2 Backpropagation
 
@@ -313,19 +313,19 @@ It is a way to compute gradients—not, by itself, the rule that updates the par
 
 A basic gradient-descent update is:
 
-\[
+$$
 w_{\text{new}} = w_{\text{old}} -
 \eta \frac{\partial L}{\partial w}
-\]
+$$
 
 Similarly:
 
-\[
+$$
 b_{\text{new}} = b_{\text{old}} -
 \eta \frac{\partial L}{\partial b}
-\]
+$$
 
-Here, \(\eta\) is the learning rate and \(L\) is the loss.
+Here, $\eta$ is the learning rate and $L$ is the loss.
 
 If a gradient indicates that increasing a parameter would increase the loss, gradient descent moves the parameter in the opposite direction. Real training typically updates many parameters together.
 
@@ -365,29 +365,29 @@ Consider a single neuron with two inputs and a sigmoid activation.
 
 Given:
 
-- \(x_1=1\), \(x_2=0\)
-- \(w_1=0.8\), \(w_2=-0.4\)
-- \(b=-0.2\)
+- $x_1=1$, $x_2=0$
+- $w_1=0.8$, $w_2=-0.4$
+- $b=-0.2$
 
 First calculate the weighted sum:
 
-\[
+$$
 z=(1)(0.8)+(0)(-0.4)-0.2=0.6
-\]
+$$
 
 Apply sigmoid:
 
-\[
+$$
 \sigma(z)=\frac{1}{1+e^{-0.6}}\approx 0.646
-\]
+$$
 
 The neuron outputs approximately **0.646**. If this is the output of a binary classifier, it may be interpreted as a positive-class probability when the model and training setup support that interpretation.
 
 If the target label is 1, a binary cross-entropy loss for this example is:
 
-\[
+$$
 L=-\log(0.646)\approx 0.437
-\]
+$$
 
 During training, backpropagation calculates gradients for the weights and bias, and the optimizer updates them. The next prediction may be different. One example does not guarantee that the model will generalize; learning requires suitable data and evaluation.
 

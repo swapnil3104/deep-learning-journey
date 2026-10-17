@@ -53,33 +53,33 @@ A perceptron is one of the earliest artificial-neuron models. It combines input 
 
 For an input vector:
 
-\[
+$$
 \mathbf{x} = [x_1, x_2, \ldots, x_n]
-\]
+$$
 
 the linear score is:
 
-\[
+$$
 z = \mathbf{w}^{T}\mathbf{x} + b
   = \sum_{i=1}^{n} w_i x_i + b
-\]
+$$
 
 Where:
 
-- \(x_i\): input feature.
-- \(w_i\): weight associated with feature \(i\).
-- \(b\): bias.
-- \(z\): linear score before applying the decision rule.
+- $x_i$: input feature.
+- $w_i$: weight associated with feature $i$.
+- $b$: bias.
+- $z$: linear score before applying the decision rule.
 
-For labels encoded as \(-1\) and \(+1\), the prediction is:
+For labels encoded as $-1$ and $+1$, the prediction is:
 
-\[
+$$
 \hat{y} =
 \begin{cases}
 +1 & \text{if } z \geq 0\\
 -1 & \text{if } z < 0
 \end{cases}
-\]
+$$
 
 ### 2.2 Main components
 
@@ -109,9 +109,9 @@ flowchart LR
 
 The decision boundary is where the score is zero:
 
-\[
+$$
 \mathbf{w}^{T}\mathbf{x} + b = 0
-\]
+$$
 
 For two input features, this boundary is a line. For three features, it is a plane. In higher dimensions, it is a hyperplane.
 
@@ -123,17 +123,17 @@ A standard perceptron can learn a linear decision boundary. It cannot perfectly 
 
 A **loss function** assigns a numerical value to a model's prediction. A lower loss generally indicates that the prediction better satisfies the objective defined by the loss.
 
-For a single example with true label \(y\) and predicted score \(z\), a loss can be written as:
+For a single example with true label $y$ and predicted score $z$, a loss can be written as:
 
-\[
+$$
 L(y,z)
-\]
+$$
 
-For a dataset of \(m\) examples, a common approach is to sum or average the individual losses:
+For a dataset of $m$ examples, a common approach is to sum or average the individual losses:
 
-\[
+$$
 J(\mathbf{w},b) = \frac{1}{m}\sum_{i=1}^{m} L(y_i,z_i)
-\]
+$$
 
 The exact objective depends on the algorithm and loss definition.
 
@@ -169,35 +169,35 @@ Two models can have identical accuracy but different loss values because a loss 
 
 Suppose an example has two features:
 
-\[
+$$
 \mathbf{x} = [2,3], \quad \mathbf{w} = [0.4,-0.2], \quad b = 0.1
-\]
+$$
 
 Then:
 
-\[
+$$
 z = (0.4)(2) + (-0.2)(3) + 0.1 = 0.3
-\]
+$$
 
-Since \(z \geq 0\), the predicted class is \(+1\).
+Since $z \geq 0$, the predicted class is $+1$.
 
 ### 4.2 Correctness depends on the true label
 
-A positive score alone does not mean a prediction is correct. It is correct only when the true label is \(+1\). If the true label is \(-1\), the same score represents a mistake.
+A positive score alone does not mean a prediction is correct. It is correct only when the true label is $+1$. If the true label is $-1$, the same score represents a mistake.
 
-For labels \(y \in \{-1,+1\}\), define the **signed score**:
+For labels $y \in \{-1,+1\}$, define the **signed score**:
 
-\[
+$$
 yz = y(\mathbf{w}^{T}\mathbf{x}+b)
-\]
+$$
 
 Interpretation:
 
-| Signed score \(yz\) | Meaning |
+| Signed score $yz$ | Meaning |
 |---:|---|
-| \(yz > 0\) | Correctly classified |
-| \(yz = 0\) | Exactly on the decision boundary |
-| \(yz < 0\) | Misclassified |
+| $yz > 0$ | Correctly classified |
+| $yz = 0$ | Exactly on the decision boundary |
+| $yz < 0$ | Misclassified |
 
 The signed score is central to understanding perceptron loss.
 
@@ -209,23 +209,23 @@ The word *perceptron loss* usually refers to the mistake-focused objective below
 
 ### 5.1 Perceptron loss
 
-For labels \(y \in \{-1,+1\}\) and score \(z=\mathbf{w}^{T}\mathbf{x}+b\):
+For labels $y \in \{-1,+1\}$ and score $z=\mathbf{w}^{T}\mathbf{x}+b$:
 
-\[
+$$
 \boxed{L_{\text{perc}}(y,z)=\max(0,-yz)}
-\]
+$$
 
-This loss is zero for examples classified correctly with a positive signed score. It is positive for misclassified examples. At the boundary \(yz=0\), the loss is also zero, although implementations may differ in whether they treat a zero score as positive or negative.
+This loss is zero for examples classified correctly with a positive signed score. It is positive for misclassified examples. At the boundary $yz=0$, the loss is also zero, although implementations may differ in whether they treat a zero score as positive or negative.
 
 ### 5.2 Example values
 
-| True label \(y\) | Score \(z\) | Signed score \(yz\) | Perceptron loss |
+| True label $y$ | Score $z$ | Signed score $yz$ | Perceptron loss |
 |---:|---:|---:|---:|
-| \(+1\) | \(2.0\) | \(2.0\) | \(0\) |
-| \(+1\) | \(0.5\) | \(0.5\) | \(0\) |
-| \(+1\) | \(-1.5\) | \(-1.5\) | \(1.5\) |
-| \(-1\) | \(-2.0\) | \(2.0\) | \(0\) |
-| \(-1\) | \(0.8\) | \(-0.8\) | \(0.8\) |
+| $+1$ | $2.0$ | $2.0$ | $0$ |
+| $+1$ | $0.5$ | $0.5$ | $0$ |
+| $+1$ | $-1.5$ | $-1.5$ | $1.5$ |
+| $-1$ | $-2.0$ | $2.0$ | $0$ |
+| $-1$ | $0.8$ | $-0.8$ | $0.8$ |
 
 ### 5.3 Why is the loss zero for correctly classified examples?
 
@@ -235,16 +235,16 @@ This makes perceptron loss different from hinge loss, which continues to penaliz
 
 ### 5.4 Alternative convention: labels 0 and 1
 
-Some datasets use \(y \in \{0,1\}\). The classic signed perceptron loss formula cannot be applied directly to these labels. A common conversion is:
+Some datasets use $y \in \{0,1\}$. The classic signed perceptron loss formula cannot be applied directly to these labels. A common conversion is:
 
-\[
+$$
 y' = 2y - 1
-\]
+$$
 
 This maps:
 
-- \(0 \rightarrow -1\)
-- \(1 \rightarrow +1\)
+- $0 \rightarrow -1$
+- $1 \rightarrow +1$
 
 Convert labels before applying the signed perceptron loss formula.
 
@@ -256,52 +256,52 @@ Convert labels before applying the signed perceptron loss formula.
 
 Let:
 
-\[
+$$
 z_i = \mathbf{w}^{T}\mathbf{x}_i+b
-\]
+$$
 
 For each training example:
 
-\[
+$$
 L_i = \max(0,-y_i z_i)
-\]
+$$
 
-The total or average empirical perceptron loss over \(m\) examples can be expressed as:
+The total or average empirical perceptron loss over $m$ examples can be expressed as:
 
-\[
+$$
 J(\mathbf{w},b)=\frac{1}{m}\sum_{i=1}^{m}\max(0,-y_i(\mathbf{w}^{T}\mathbf{x}_i+b))
-\]
+$$
 
 The average is useful for monitoring the overall objective. The original online perceptron learning algorithm, however, is commonly implemented by processing individual examples and updating only when the prediction is wrong.
 
 ### 6.2 Piecewise form
 
-\[
+$$
 L_{\text{perc}}(y,z)=
 \begin{cases}
 0 & \text{if } yz \geq 0\\
 -yz & \text{if } yz < 0
 \end{cases}
-\]
+$$
 
-This is a piecewise linear loss. It is not differentiable at \(yz=0\), and it is flat for correctly classified examples with a strictly positive signed score.
+This is a piecewise linear loss. It is not differentiable at $yz=0$, and it is flat for correctly classified examples with a strictly positive signed score.
 
 ### 6.3 Geometric interpretation
 
 The signed score indicates which side of the decision boundary an example lies on, relative to its true class.
 
-- If \(yz>0\), the example lies on the correct side.
-- If \(yz<0\), the example lies on the wrong side.
-- More negative \(yz\) means a larger loss.
+- If $yz>0$, the example lies on the correct side.
+- If $yz<0$, the example lies on the wrong side.
+- More negative $yz$ means a larger loss.
 - Perceptron loss does not reward increasing an already positive margin.
 
 The signed score is not itself the perpendicular distance to the decision boundary. The geometric distance is:
 
-\[
+$$
 d = \frac{|\,\mathbf{w}^{T}\mathbf{x}+b\,|}{\|\mathbf{w}\|}
-\]
+$$
 
-for nonzero \(\mathbf{w}\).
+for nonzero $\mathbf{w}$.
 
 ### 6.4 Visual intuition
 
@@ -321,19 +321,19 @@ flowchart TD
 
 ### 7.1 The update rule
 
-For learning rate \(\eta>0\), a commonly used perceptron update for labels \(-1,+1\) is:
+For learning rate $\eta>0$, a commonly used perceptron update for labels $-1,+1$ is:
 
-\[
+$$
 \mathbf{w} \leftarrow \mathbf{w}+\eta y\mathbf{x}
-\]
+$$
 
-\[
+$$
 b \leftarrow b+\eta y
-\]
+$$
 
-Apply this update when an example is misclassified. Equivalently, a loss-based subgradient update can be written for examples with \(yz<0\). At the exact boundary, implementation details depend on the prediction convention and update condition.
+Apply this update when an example is misclassified. Equivalently, a loss-based subgradient update can be written for examples with $yz<0$. At the exact boundary, implementation details depend on the prediction convention and update condition.
 
-For labels \(0\) and \(1\), first convert them to \(-1\) and \(+1\), or use a consistent alternative implementation.
+For labels $0$ and $1$, first convert them to $-1$ and $+1$, or use a consistent alternative implementation.
 
 ### 7.2 Step-by-step workflow
 
@@ -363,45 +363,45 @@ flowchart TD
 
 Suppose:
 
-\[
+$$
 \mathbf{x}=[2,1], \quad y=+1,\quad \mathbf{w}=[0.1,0.2],\quad b=-0.8
-\]
+$$
 
-With learning rate \(\eta=0.5\):
+With learning rate $\eta=0.5$:
 
 **Step 1: Calculate the score**
 
-\[
+$$
 z=(0.1)(2)+(0.2)(1)-0.8=-0.4
-\]
+$$
 
 **Step 2: Calculate the signed score and loss**
 
-\[
+$$
 yz=(+1)(-0.4)=-0.4
-\]
+$$
 
-\[
+$$
 L=\max(0,-(-0.4))=0.4
-\]
+$$
 
 The example is misclassified.
 
 **Step 3: Update weights**
 
-\[
+$$
 \mathbf{w}_{new}=[0.1,0.2]+0.5(+1)[2,1]=[1.1,0.7]
-\]
+$$
 
-\[
+$$
 b_{new}=-0.8+0.5(+1)=-0.3
-\]
+$$
 
 **Step 4: Recalculate the score**
 
-\[
+$$
 z_{new}=(1.1)(2)+(0.7)(1)-0.3=2.6
-\]
+$$
 
 The new score is positive, so the example is now correctly classified.
 
@@ -606,28 +606,28 @@ print(classification_report(y_test, predictions))
 
 Imagine classifying an email as spam or not spam using two simplified features:
 
-- \(x_1\): number of suspicious keywords.
-- \(x_2\): number of links.
+- $x_1$: number of suspicious keywords.
+- $x_2$: number of links.
 
-Encode spam as \(+1\) and not spam as \(-1\).
+Encode spam as $+1$ and not spam as $-1$.
 
 Suppose:
 
-\[
+$$
 \mathbf{w}=[0.8,0.4], \quad b=-2.0
-\]
+$$
 
-For an email with \(x=[1,2]\):
+For an email with $x=[1,2]$:
 
-\[
+$$
 z=(0.8)(1)+(0.4)(2)-2.0=-0.4
-\]
+$$
 
-If the true label is \(+1\), then:
+If the true label is $+1$, then:
 
-\[
+$$
 L=\max(0,-(+1)(-0.4))=0.4
-\]
+$$
 
 The model has misclassified this spam email and receives a positive loss. The perceptron update increases the score for this positive example.
 
@@ -635,10 +635,10 @@ The model has misclassified this spam email and receives a positive loss. The pe
 
 | Email | True label | Score | Prediction | Loss |
 |---|---:|---:|---:|---:|
-| A | \(+1\) | \(1.2\) | \(+1\) | \(0\) |
-| B | \(+1\) | \(-0.4\) | \(-1\) | \(0.4\) |
-| C | \(-1\) | \(-0.7\) | \(-1\) | \(0\) |
-| D | \(-1\) | \(0.5\) | \(+1\) | \(0.5\) |
+| A | $+1$ | $1.2$ | $+1$ | $0$ |
+| B | $+1$ | $-0.4$ | $-1$ | $0.4$ |
+| C | $-1$ | $-0.7$ | $-1$ | $0$ |
+| D | $-1$ | $0.5$ | $+1$ | $0.5$ |
 
 This is a simplified illustration, not a complete spam-detection system. Real spam detection generally needs more features, appropriate data handling, validation, and potentially probabilistic models.
 
@@ -652,22 +652,22 @@ Different loss functions express different learning goals. They should not be tr
 
 | Property | Perceptron loss | Hinge loss | Binary cross-entropy |
 |---|---|---|---|
-| Typical labels | \(-1,+1\) | \(-1,+1\) | \(0,1\) |
-| Formula | \(\max(0,-yz)\) | \(\max(0,1-yz)\) | \(-[y\log p+(1-y)\log(1-p)]\) |
+| Typical labels | $-1,+1$ | $-1,+1$ | $0,1$ |
+| Formula | $$\max(0,-yz)$$ | $$\max(0,1-yz)$$ | $$-[y\log p+(1-y)\log(1-p)]$$ |
 | Correct prediction with small positive margin | Zero loss | May have positive loss | Usually positive loss |
 | Encourages a margin | No explicit positive margin target | Yes, margin of at least 1 | Not a fixed-margin objective |
 | Probabilistic output | No | No | Yes, when paired with a suitable probability model |
 | Common use | Classic perceptron learning | Support Vector Machines and margin classifiers | Logistic regression and binary neural-network outputs |
 
-Here \(z\) is a raw score, \(y\in\{-1,+1\}\) for perceptron and hinge loss, and \(p\in(0,1)\) is a predicted probability for cross-entropy.
+Here $z$ is a raw score, $y\in\{-1,+1\}$ for perceptron and hinge loss, and $p\in(0,1)$ is a predicted probability for cross-entropy.
 
 ### 10.2 Perceptron loss vs. mean squared error
 
 Mean squared error (MSE) is commonly used for regression:
 
-\[
+$$
 L_{\text{MSE}}=(y-\hat{y})^2
-\]
+$$
 
 MSE measures the squared difference between a numeric target and prediction. Perceptron loss instead focuses on the sign of the score relative to the class label. MSE can be used in custom classification setups, but it is not the standard objective for the classic perceptron.
 
@@ -727,7 +727,7 @@ For complex tasks such as modern image recognition, medical diagnosis, or safety
 - **No explicit margin maximization:** Correctly classified examples receive zero perceptron loss even if their margin is small.
 - **Order sensitivity:** The sequence of training examples can affect the learned weights.
 - **Sensitive to feature scales:** Features with large numerical ranges can dominate updates.
-- **Loss is not differentiable at the boundary:** It has a kink at \(yz=0\); the classic algorithm avoids needing a standard smooth gradient calculation.
+- **Loss is not differentiable at the boundary:** It has a kink at $yz=0$; the classic algorithm avoids needing a standard smooth gradient calculation.
 
 ---
 
@@ -735,8 +735,8 @@ For complex tasks such as modern image recognition, medical diagnosis, or safety
 
 | Mistake | Why it is wrong | Correct approach |
 |---|---|---|
-| Using labels \(0,1\) directly in \(\max(0,-yz)\) | The signed formula assumes labels \(-1,+1\) | Convert using \(y'=2y-1\) |
-| Assuming every positive score is correct | Correctness depends on the true label | Check the sign of \(yz\) |
+| Using labels $$0,1$$ directly in $$\max(0,-yz)$$ | The signed formula assumes labels $$-1,+1$$ | Convert using $$y'=2y-1$$ |
+| Assuming every positive score is correct | Correctness depends on the true label | Check the sign of $$yz$$ |
 | Assuming zero loss means a large margin | Perceptron loss is zero for any nonnegative signed score | Use margin analysis or hinge loss if needed |
 | Calling loss and error rate the same thing | Loss can depend on score magnitude | Report loss and accuracy separately |
 | Expecting convergence on all datasets | Nonseparable data may cause repeated mistakes | Set an epoch limit and evaluate validation performance |
@@ -750,52 +750,52 @@ For complex tasks such as modern image recognition, medical diagnosis, or safety
 
 ### 14.1 Relationship between perceptron loss and subgradients
 
-For an example with score \(z=\mathbf{w}^{T}\mathbf{x}+b\):
+For an example with score $z=\mathbf{w}^{T}\mathbf{x}+b$:
 
-\[
+$$
 L=\max(0,-yz)
-\]
+$$
 
-When \(yz<0\), the loss is locally linear:
+When $yz<0$, the loss is locally linear:
 
-\[
+$$
 \frac{\partial L}{\partial \mathbf{w}}=-y\mathbf{x}
-\]
+$$
 
-\[
+$$
 \frac{\partial L}{\partial b}=-y
-\]
+$$
 
-A gradient-descent-style step with learning rate \(\eta\) becomes:
+A gradient-descent-style step with learning rate $\eta$ becomes:
 
-\[
+$$
 \mathbf{w}\leftarrow\mathbf{w}-\eta(-y\mathbf{x})
 =\mathbf{w}+\eta y\mathbf{x}
-\]
+$$
 
-\[
+$$
 b\leftarrow b+\eta y
-\]
+$$
 
-When \(yz>0\), the loss is locally flat and its gradient is zero. At \(yz=0\), the loss is not differentiable; a subgradient can be selected, but the classic perceptron implementation commonly relies on a discrete prediction/mistake condition.
+When $yz>0$, the loss is locally flat and its gradient is zero. At $yz=0$, the loss is not differentiable; a subgradient can be selected, but the classic perceptron implementation commonly relies on a discrete prediction/mistake condition.
 
 ### 14.2 Why is perceptron loss not a smooth loss?
 
-The maximum operation creates a corner at \(yz=0\). Away from the boundary, the loss is linear on the misclassified side and flat on the correctly classified side. It is convex as a function of the model parameters for a fixed example, but not differentiable everywhere.
+The maximum operation creates a corner at $yz=0$. Away from the boundary, the loss is linear on the misclassified side and flat on the correctly classified side. It is convex as a function of the model parameters for a fixed example, but not differentiable everywhere.
 
 ### 14.3 Perceptron loss and hinge loss
 
 Perceptron loss:
 
-\[
+$$
 L_{\text{perc}}=\max(0,-yz)
-\]
+$$
 
 Hinge loss:
 
-\[
+$$
 L_{\text{hinge}}=\max(0,1-yz)
-\]
+$$
 
 The difference is the margin target. Perceptron loss stops penalizing an example once it is on the correct side of the boundary. Hinge loss continues to penalize it until its signed score reaches at least 1.
 
@@ -803,12 +803,12 @@ The difference is the margin target. Perceptron loss stops penalizing an example
 
 A regularized objective may add a penalty on large weights:
 
-\[
+$$
 J(\mathbf{w},b)=\frac{1}{m}\sum_{i=1}^{m}\max(0,-y_i(\mathbf{w}^{T}\mathbf{x}_i+b))
 +\lambda\|\mathbf{w}\|_2^2
-\]
+$$
 
-Here \(\lambda\geq0\) controls the strength of the regularization penalty. This is a modified optimization objective, not the unmodified classic perceptron algorithm. Regularization can discourage excessively large weights, but the training procedure must be designed to optimize the chosen objective.
+Here $\lambda\geq0$ controls the strength of the regularization penalty. This is a modified optimization objective, not the unmodified classic perceptron algorithm. Regularization can discourage excessively large weights, but the training procedure must be designed to optimize the chosen objective.
 
 ### 14.5 Online learning and batch evaluation
 
@@ -819,7 +819,7 @@ The classic perceptron commonly updates parameters one example at a time. The av
 
 ### 14.6 Feature scaling and feature engineering
 
-Since updates depend on \(\mathbf{x}\), feature magnitudes affect update sizes. Standardization or normalization can improve the behavior of the learning process, particularly when features have very different units.
+Since updates depend on $\mathbf{x}$, feature magnitudes affect update sizes. Standardization or normalization can improve the behavior of the learning process, particularly when features have very different units.
 
 A perceptron can also use transformed features. For example, adding polynomial features can create a linear boundary in the transformed feature space that corresponds to a nonlinear boundary in the original input space. The model is still linear in its parameters.
 
@@ -838,7 +838,7 @@ This is a small educational example. It is not a validated real-world student as
 
 ### 15.2 Dataset
 
-We will use a small synthetic dataset. Encode `Pass` as \(+1\) and `Fail` as \(-1\).
+We will use a small synthetic dataset. Encode `Pass` as $+1$ and `Fail` as $-1$.
 
 ```python
 import numpy as np
@@ -926,17 +926,17 @@ flowchart TD
 
 Perceptron loss is a classification loss commonly defined as:
 
-\[
+$$
 L(y,z)=\max(0,-yz)
-\]
+$$
 
-where \(y\in\{-1,+1\}\) and \(z=\mathbf{w}^{T}\mathbf{x}+b\).
+where $y\in\{-1,+1\}$ and $z=\mathbf{w}^{T}\mathbf{x}+b$.
 
 ### Q2. When is perceptron loss zero?
 
-It is zero when \(yz\geq0\), meaning the score is on the correct side of the boundary or exactly on the boundary under this formula. Prediction conventions at a zero score should be stated explicitly.
+It is zero when $yz\geq0$, meaning the score is on the correct side of the boundary or exactly on the boundary under this formula. Prediction conventions at a zero score should be stated explicitly.
 
-### Q3. Why does perceptron loss use labels \(-1\) and \(+1\)?
+### Q3. Why does perceptron loss use labels $-1$ and $+1$?
 
 Multiplying the true label by the score creates a signed score. A positive value indicates the correct side of the boundary, while a negative value indicates a misclassification.
 
@@ -944,23 +944,23 @@ Multiplying the true label by the score creates a signed score. A positive value
 
 For a misclassified example:
 
-\[
+$$
 \mathbf{w}\leftarrow\mathbf{w}+\eta y\mathbf{x}
-\]
+$$
 
-\[
+$$
 b\leftarrow b+\eta y
-\]
+$$
 
-where \(\eta\) is the learning rate.
+where $\eta$ is the learning rate.
 
 ### Q5. Is perceptron loss differentiable?
 
-It is not differentiable at \(yz=0\). It is piecewise linear and has a flat region for correctly classified examples and a linear penalty for misclassified examples.
+It is not differentiable at $yz=0$. It is piecewise linear and has a flat region for correctly classified examples and a linear penalty for misclassified examples.
 
 ### Q6. How does perceptron loss differ from hinge loss?
 
-Perceptron loss is zero once an example is on the correct side of the decision boundary. Hinge loss, \(\max(0,1-yz)\), penalizes examples whose signed score is below the margin of 1.
+Perceptron loss is zero once an example is on the correct side of the decision boundary. Hinge loss, $\max(0,1-yz)$, penalizes examples whose signed score is below the margin of 1.
 
 ### Q7. Does a lower perceptron loss always mean higher accuracy?
 
@@ -982,9 +982,9 @@ The update depends on feature values. Features with large scales can cause dispr
 
 It is the mean of individual perceptron losses over a dataset:
 
-\[
+$$
 J=\frac{1}{m}\sum_{i=1}^{m}\max(0,-y_i z_i)
-\]
+$$
 
 ### Q12. What is the main limitation of the perceptron?
 
@@ -994,7 +994,7 @@ It learns a linear decision boundary and cannot solve every classification probl
 
 ## 17. 🧭 Best Practices
 
-1. **State the label encoding.** The formula \(\max(0,-yz)\) assumes \(y\in\{-1,+1\}\).
+1. **State the label encoding.** The formula $\max(0,-yz)$ assumes $y\in\{-1,+1\}$.
 2. **Keep score and prediction distinct.** A score is a real number; a prediction is a class label.
 3. **Monitor multiple metrics.** Track loss, accuracy, and confusion matrix where appropriate.
 4. **Scale features when needed.** Fit transformations only on training data.
@@ -1012,11 +1012,11 @@ It learns a linear decision boundary and cannot solve every classification probl
 ### 18.1 Key points
 
 - A perceptron is a linear binary classifier.
-- Its score is \(z=\mathbf{w}^{T}\mathbf{x}+b\).
-- The classic signed formulation uses labels \(y\in\{-1,+1\}\).
-- The perceptron loss is \(L=\max(0,-yz)\).
+- Its score is $z=\mathbf{w}^{T}\mathbf{x}+b$.
+- The classic signed formulation uses labels $y\in\{-1,+1\}$.
+- The perceptron loss is $L=\max(0,-yz)$.
 - A negative signed score means the example is misclassified.
-- The classic update for a mistake is \(\mathbf{w}\leftarrow\mathbf{w}+\eta y\mathbf{x}\) and \(b\leftarrow b+\eta y\).
+- The classic update for a mistake is $\mathbf{w}\leftarrow\mathbf{w}+\eta y\mathbf{x}$ and $b\leftarrow b+\eta y$.
 - Perceptron loss is zero for nonnegative signed scores and does not explicitly reward a larger positive margin.
 - The convergence theorem requires linearly separable data and standard assumptions.
 - Loss, accuracy, and probability are different concepts.
@@ -1026,25 +1026,25 @@ It learns a linear decision boundary and cannot solve every classification probl
 
 | Concept | Formula |
 |---|---|
-| Linear score | \(z=\mathbf{w}^{T}\mathbf{x}+b\) |
-| Prediction for signed labels | \(\hat{y}=+1\) if \(z\geq0\), otherwise \(-1\) |
-| Signed score | \(yz\) |
-| Perceptron loss | \(L=\max(0,-yz)\) |
-| Average perceptron loss | \(J=\frac{1}{m}\sum_{i=1}^{m}\max(0,-y_i z_i)\) |
-| Weight update on a mistake | \(\mathbf{w}\leftarrow\mathbf{w}+\eta y\mathbf{x}\) |
-| Bias update on a mistake | \(b\leftarrow b+\eta y\) |
-| Hinge loss | \(L=\max(0,1-yz)\) |
-| Distance to boundary | \(d=\frac{|\,\mathbf{w}^{T}\mathbf{x}+b\,|}{\|\mathbf{w}\|}\) |
+| Linear score | $$z=\mathbf{w}^{T}\mathbf{x}+b$$ |
+| Prediction for signed labels | $$\hat{y}=+1$$ if $$z\geq0$$, otherwise $$-1$$ |
+| Signed score | $$yz$$ |
+| Perceptron loss | $$L=\max(0,-yz)$$ |
+| Average perceptron loss | $$J=\frac{1}{m}\sum_{i=1}^{m}\max(0,-y_i z_i)$$ |
+| Weight update on a mistake | $$\mathbf{w}\leftarrow\mathbf{w}+\eta y\mathbf{x}$$ |
+| Bias update on a mistake | $$b\leftarrow b+\eta y$$ |
+| Hinge loss | $$L=\max(0,1-yz)$$ |
+| Distance to boundary | $$d=\frac{|\,\mathbf{w}^{T}\mathbf{x}+b\,|}{\|\mathbf{w}\|}$$ |
 
 ### 18.3 Loss interpretation at a glance
 
-| Signed score \(yz\) | Classification status | Perceptron loss |
+| Signed score $yz$ | Classification status | Perceptron loss |
 |---:|---|---:|
-| \(2.0\) | Correct | \(0\) |
-| \(0.2\) | Correct | \(0\) |
-| \(0\) | On boundary | \(0\) |
-| \(-0.2\) | Incorrect | \(0.2\) |
-| \(-2.0\) | Incorrect | \(2.0\) |
+| $2.0$ | Correct | $0$ |
+| $0.2$ | Correct | $0$ |
+| $0$ | On boundary | $0$ |
+| $-0.2$ | Incorrect | $0.2$ |
+| $-2.0$ | Incorrect | $2.0$ |
 
 ### 18.4 Visual summary / roadmap
 

@@ -70,30 +70,33 @@ classify an input into one of two classes.
 
 For an input vector:
 
-\[ `\mathbf{x}`{=tex} = \[x_1, x_2, `\ldots`{=tex}, x_n\] \]
+$$
+\mathbf{x} = [x_1, x_2, \ldots, x_n]
+$$
 
 the perceptron computes a weighted sum and adds a bias:
 
-\[ z = `\sum`{=tex}\_{i=1}\^{n} w_i x_i + b \]
+$$
+z = \sum_{i=1}^{n} w_i x_i + b
+$$
 
 It then applies a step function:
 
-\[ `\hat{y}`{=tex} =
-```{=tex}
+$$
+\hat{y} =
 \begin{cases}
 1 & \text{if } z \geq 0 \\
 0 & \text{if } z < 0
 \end{cases}
-```
-\]
+$$
 
 Where:
 
--   (x_i): the (i)-th input feature
--   (w_i): the weight associated with that feature
--   (b): the bias
--   (z): the weighted sum before activation
--   (`\hat{y}`{=tex}): the predicted class
+-   $x_i$: the $i$-th input feature
+-   $w_i$: the weight associated with that feature
+-   $b$: the bias
+-   $z$: the weighted sum before activation
+-   $\hat{y}$: the predicted class
 
 ### Simple example
 
@@ -167,39 +170,51 @@ Without a bias, a linear decision boundary must pass through the origin.
 
 ### 5.1 Weighted sum
 
-For (n) input features:
+For $n$ input features:
 
-\[ z = w_1x_1 + w_2x_2 + `\cdots `{=tex}+ w_nx_n + b \]
+$$
+z = w_1x_1 + w_2x_2 + \cdots + w_nx_n + b
+$$
 
 Using vector notation:
 
-\[ z = `\mathbf{w}`{=tex}\^{T}`\mathbf{x}`{=tex} + b \]
+$$
+z = \mathbf{w}^{T}\mathbf{x} + b
+$$
 
-Here, (`\mathbf{w}`{=tex}) is the weight vector and (`\mathbf{x}`{=tex})
+Here, $\mathbf{w}$ is the weight vector and $\mathbf{x}$
 is the input vector.
 
 ### 5.2 Prediction function
 
 For a binary output:
 
-\[ `\hat{y}`{=tex} = H(`\mathbf{w}`{=tex}\^{T}`\mathbf{x}`{=tex}+b) \]
+$$
+\hat{y} = H(\mathbf{w}^{T}\mathbf{x}+b)
+$$
 
-where (H) is a step activation function. One common convention returns 1
+where $H$ is a step activation function. One common convention returns 1
 when the score is greater than or equal to zero and 0 otherwise.
 
 ### 5.3 Decision boundary
 
 The decision boundary is where the model's score equals zero:
 
-\[ `\mathbf{w}`{=tex}\^{T}`\mathbf{x}`{=tex}+b=0 \]
+$$
+\mathbf{w}^{T}\mathbf{x}+b=0
+$$
 
 For two features:
 
-\[ w_1x_1+w_2x_2+b=0 \]
+$$
+w_1x_1+w_2x_2+b=0
+$$
 
-If (w_2 `\ne 0`{=tex}), this can be rearranged as:
+If $w_2 \ne 0$, this can be rearranged as:
 
-\[ x_2=-`\frac{w_1}{w_2}`{=tex}x_1-`\frac{b}{w_2}`{=tex} \]
+$$
+x_2=-\frac{w_1}{w_2}x_1-\frac{b}{w_2}
+$$
 
 This is a straight line in two dimensions and a hyperplane in higher
 dimensions.
@@ -209,11 +224,11 @@ dimensions.
 The weight vector is perpendicular to the decision boundary. The sign of
 the score indicates which side of the boundary an example lies on.
 
--   (z `\geq 0`{=tex}): class 1 under the convention used here.
--   (z \< 0): class 0.
+-   $z \geq 0$: class 1 under the convention used here.
+-   $z < 0$: class 0.
 
 The distance from a point to the boundary is proportional to
-(\|z\|/\|`\mathbf{w}`{=tex}\|), provided (`\mathbf{w}`{=tex}) is
+$\|z\|/\|\mathbf{w}\|$, provided $\mathbf{w}$ is
 nonzero.
 
 ## 6. ⚙️ Activation Functions
@@ -224,16 +239,15 @@ An activation function converts a neuron's score into an output.
 
 The classic perceptron uses a threshold function:
 
-\[ H(z)=
-```{=tex}
+$$
+H(z)=
 \begin{cases}
 1 & z \geq 0\\
 0 & z < 0
 \end{cases}
-```
-\]
+$$
 
-Some texts instead use labels (-1) and (+1). The update rule must match
+Some texts instead use labels $-1$ and $+1$. The update rule must match
 the chosen label convention.
 
 **Characteristics:** - Produces a discrete output. - Is not
@@ -243,21 +257,12 @@ descent through the activation function.
 
 ### 6.2 Other common neural-network activations
 
-  -----------------------------------------------------------------------------------
-  Activation              Formula                             Typical use
-  ----------------------- ----------------------------------- -----------------------
-  Sigmoid                 (`\sigma`{=tex}(z)=1/(1+e\^{-z}))   Binary probability
-                                                              output
-
-  Tanh                    (`\tanh`{=tex}(z))                  Hidden layers in some
-                                                              networks
-
-  ReLU                    (`\max`{=tex}(0,z))                 Hidden layers in many
-                                                              deep networks
-
-  Softmax                 Normalized exponentials across      Multiclass output layer
-                          classes                             
-  -----------------------------------------------------------------------------------
+| Activation | Formula | Typical use |
+|---|---|---|
+| Sigmoid | $$\sigma(z)=\frac{1}{1+e^{-z}}$$ | Binary probability output |
+| Tanh | $$\tanh(z)$$ | Hidden layers in some networks |
+| ReLU | $$\max(0,z)$$ | Hidden layers in many deep networks |
+| Softmax | Normalized exponentials across classes | Multiclass output layer |
 
 These functions are important in neural networks, but they are not the
 classic perceptron's threshold activation. Replacing the step function
@@ -281,7 +286,7 @@ The classic training process is:
 ### Important terms
 
 -   **Epoch:** One complete pass through the training dataset.
--   **Learning rate ((`\eta`{=tex})):** Controls the size of each
+-   **Learning rate ($\eta$):** Controls the size of each
     update.
 -   **Prediction error:** Difference between the true label and
     predicted label under the 0/1 convention.
@@ -294,33 +299,39 @@ converge.
 
 ## 8. 📉 Perceptron Learning Algorithm
 
-For labels (y `\in `{=tex}{0,1}), use:
+For labels $y \in \{0,1\}$, use:
 
-\[ `\hat{y}`{=tex}=H(`\mathbf{w}`{=tex}\^{T}`\mathbf{x}`{=tex}+b) \]
+$$
+\hat{y}=H(\mathbf{w}^{T}\mathbf{x}+b)
+$$
 
 Define the error:
 
-\[ e=y-`\hat{y}`{=tex} \]
+$$
+e=y-\hat{y}
+$$
 
 Update the parameters as follows:
 
-\[ `\mathbf{w}`{=tex}
-`\leftarrow `{=tex}`\mathbf{w}`{=tex}+`\eta `{=tex}e`\mathbf{x}`{=tex}
-\]
+$$
+\mathbf{w} \leftarrow \mathbf{w}+\eta e\mathbf{x}
+$$
 
-\[ b `\leftarrow `{=tex}b+`\eta `{=tex}e \]
+$$
+b \leftarrow b+\eta e
+$$
 
-Where: - (y) is the true label. - (`\hat{y}`{=tex}) is the predicted
-label. - (e) is the prediction error. - (`\eta`{=tex}) is a positive
-learning rate. - (`\mathbf{x}`{=tex}) is the input vector.
+Where: - $y$ is the true label. - $\hat{y}$ is the predicted
+label. - $e$ is the prediction error. - $\eta$ is a positive
+learning rate. - $\mathbf{x}$ is the input vector.
 
 ### Why does this update work?
 
--   If the true class is 1 but the model predicts 0, then (e=1). The
+-   If the true class is 1 but the model predicts 0, then $e=1$. The
     update moves the score upward for that input.
--   If the true class is 0 but the model predicts 1, then (e=-1). The
+-   If the true class is 0 but the model predicts 1, then $e=-1$. The
     update moves the score downward for that input.
--   If the prediction is correct, then (e=0), so no update occurs.
+-   If the prediction is correct, then $e=0$, so no update occurs.
 
 ### Pseudocode
 
@@ -358,7 +369,7 @@ guaranteed.
 
 The AND gate outputs 1 only when both inputs are 1.
 
-    (x_1)   (x_2)   Target (y)
+    $x_1$   $x_2$   Target $y$
   ------- ------- ------------
         0       0            0
         0       1            0
@@ -367,31 +378,37 @@ The AND gate outputs 1 only when both inputs are 1.
 
 One valid perceptron is:
 
-\[ z=x_1+x_2-1.5 \]
+$$
+z=x_1+x_2-1.5
+$$
 
-The output is 1 if (z `\geq 0`{=tex}), otherwise 0.
+The output is 1 if $z \geq 0$, otherwise 0.
 
-    (x_1)   (x_2)   Score (z)   Prediction
+    $x_1$   $x_2$   Score $z$   Prediction
   ------- ------- ----------- ------------
         0       0        -1.5            0
         0       1        -0.5            0
         1       0        -0.5            0
         1       1         0.5            1
 
-Thus, weights (w_1=1), (w_2=1), and bias (b=-1.5) correctly implement
+Thus, weights $w_1=1$, $w_2=1$, and bias $b=-1.5$ correctly implement
 AND.
 
 ### OR gate
 
 The OR gate outputs 1 when at least one input is 1. One valid setup is:
 
-\[ z=x_1+x_2-0.5 \]
+$$
+z=x_1+x_2-0.5
+$$
 
 ### NOT gate
 
 A NOT gate has one input. One valid setup is:
 
-\[ z=-x-(-0.5)=-x+0.5 \]
+$$
+z=-x-(-0.5)=-x+0.5
+$$
 
 This yields 1 for input 0 and 0 for input 1 under the threshold
 convention used here.
@@ -555,7 +572,7 @@ transformation to validation and test data.
 
 The XOR truth table is:
 
-    (x_1)   (x_2)   XOR output
+    $x_1$   $x_2$   XOR output
   ------- ------- ------------
         0       0            0
         0       1            1
@@ -802,17 +819,19 @@ function.
 
 ### Q4. What is the perceptron equation?
 
-\[
-z=`\mathbf{w}`{=tex}\^{T}`\mathbf{x}`{=tex}+b,`\qquad `{=tex}`\hat{y}`{=tex}=H(z)
-\]
+$$
+z=\mathbf{w}^{T}\mathbf{x}+b, \qquad \hat{y}=H(z)
+$$
 
 ### Q5. What is the perceptron learning rule for labels 0 and 1?
 
-\[
-`\mathbf{w}`{=tex}`\leftarrow`{=tex}`\mathbf{w}`{=tex}+`\eta`{=tex}(y-`\hat{y}`{=tex})`\mathbf{x}`{=tex}
-\]
+$$
+\mathbf{w} \leftarrow \mathbf{w}+\eta(y-\hat{y})\mathbf{x}
+$$
 
-\[ b`\leftarrow `{=tex}b+`\eta`{=tex}(y-`\hat{y}`{=tex}) \]
+$$
+b \leftarrow b+\eta(y-\hat{y})
+$$
 
 ### Q6. Why is bias needed?
 

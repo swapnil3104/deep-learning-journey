@@ -125,25 +125,25 @@ flowchart LR
 
 ### 3.2 Mathematical formula
 
-For \(n\) input features:
+For $n$ input features:
 
-\[
+$$
 z = \sum_{i=1}^{n} w_i x_i + b
-\]
+$$
 
 The neuron output is:
 
-\[
+$$
 a = \phi(z)
-\]
+$$
 
 Where:
-- \(x_i\): input feature.
-- \(w_i\): weight associated with that input.
-- \(b\): bias.
-- \(z\): weighted sum before activation.
-- \(\phi\): activation function.
-- \(a\): activated output.
+- $x_i$: input feature.
+- $w_i$: weight associated with that input.
+- $b$: bias.
+- $z$: weighted sum before activation.
+- $\phi$: activation function.
+- $a$: activated output.
 
 ### 3.3 Intuition
 
@@ -155,21 +155,21 @@ Suppose a model predicts whether a student passes based on study hours, attendan
 
 A **perceptron** is a simple artificial neuron used for binary classification. It calculates a weighted sum and applies a threshold.
 
-\[
+$$
 \hat{y} =
 \begin{cases}
 1 & \text{if } w^T x + b \geq 0 \\
 0 & \text{otherwise}
 \end{cases}
-\]
+$$
 
 ### 4.1 Decision boundary
 
 The boundary is described by:
 
-\[
+$$
 w^T x + b = 0
-\]
+$$
 
 With two features, this boundary is a line; with three features, it is a plane; with more features, it is a hyperplane.
 
@@ -177,7 +177,7 @@ With two features, this boundary is a line; with three features, it is a plane; 
 
 A single perceptron cannot learn the XOR relationship because XOR is not linearly separable. A multilayer network with nonlinear activation functions can learn such a relationship.
 
-| \(x_1\) | \(x_2\) | XOR output |
+| $x_1$ | $x_2$ | XOR output |
 |---:|---:|---:|
 | 0 | 0 | 0 |
 | 0 | 1 | 1 |
@@ -218,33 +218,33 @@ Produces predictions. Its shape and activation depend on the task:
 
 Every neuron in a dense layer receives input from every unit in the previous layer.
 
-For input vector \(x\):
+For input vector $x$:
 
-\[
+$$
 z = Wx + b
-\]
+$$
 
-\[
+$$
 a = \phi(z)
-\]
+$$
 
-If a dense layer has \(n_{in}\) input units and \(n_{out}\) output units, its trainable parameter count is:
+If a dense layer has $n_{in}$ input units and $n_{out}$ output units, its trainable parameter count is:
 
-\[
+$$
 P = n_{in}n_{out} + n_{out}
-\]
+$$
 
 The final term is one bias for each output unit.
 
-**Example:** A dense layer with 12 input features and 5 neurons has \(12 \times 5 + 5 = 65\) trainable parameters.
+**Example:** A dense layer with 12 input features and 5 neurons has $12 \times 5 + 5 = 65$ trainable parameters.
 
 ### 5.5 Parameter count example
 
 For an architecture with 20 input features, a hidden layer of 64 neurons, and 3 output neurons:
 
-- First layer: \(20 \times 64 + 64 = 1,344\)
-- Output layer: \(64 \times 3 + 3 = 195\)
-- Total: \(1,539\) trainable parameters.
+- First layer: $20 \times 64 + 64 = 1,344$
+- Output layer: $64 \times 3 + 3 = 195$
+- Total: $1,539$ trainable parameters.
 
 ---
 
@@ -262,8 +262,8 @@ Biases provide an adjustable offset. They allow a neuron to shift its activation
 
 | Item | Type | Examples |
 |---|---|---|
-| Weight matrix | Trainable parameter | \(W\) |
-| Bias vector | Trainable parameter | \(b\) |
+| Weight matrix | Trainable parameter | $W$ |
+| Bias vector | Trainable parameter | $b$ |
 | Learning rate | Hyperparameter | 0.001 |
 | Number of hidden layers | Architecture hyperparameter | 3 |
 | Batch size | Training hyperparameter | 32 |
@@ -280,21 +280,21 @@ Parameters are learned from data. Hyperparameters are chosen or tuned by the pra
 
 For a two-layer network:
 
-\[
+$$
 z^{[1]} = W^{[1]}x + b^{[1]}
-\]
+$$
 
-\[
+$$
 a^{[1]} = \phi_1(z^{[1]})
-\]
+$$
 
-\[
+$$
 z^{[2]} = W^{[2]}a^{[1]} + b^{[2]}
-\]
+$$
 
-\[
+$$
 \hat{y} = \phi_2(z^{[2]})
-\]
+$$
 
 The superscript in square brackets identifies a layer; it is not an exponent.
 
@@ -324,41 +324,41 @@ Activation functions introduce nonlinearity. Without nonlinear activations betwe
 
 | Function | Formula | Output range | Common use | Limitation |
 |---|---|---|---|---|
-| Linear | \(f(x)=x\) | \((-\infty,\infty)\) | Regression output | No nonlinearity |
-| Sigmoid | \(\frac{1}{1+e^{-x}}\) | \((0,1)\) | Binary probability output | Saturation and vanishing gradients |
-| Tanh | \(\tanh(x)\) | \((-1,1)\) | Some hidden/recurrent units | Saturation |
-| ReLU | \(\max(0,x)\) | \([0,\infty)\) | Common hidden-layer activation | Dying ReLU |
-| Leaky ReLU | \(\max(\alpha x,x)\) | Real values | Alternative hidden activation | Requires slope choice |
-| Softmax | \(\frac{e^{z_i}}{\sum_j e^{z_j}}\) | Each output in \((0,1)\), sums to 1 | Multiclass output | Not for independent multilabel outputs |
-| GELU | \(x\Phi(x)\) | Real values | Transformers and modern networks | More involved computation |
+| Linear | $$f(x)=x$$ | $$(-\infty,\infty)$$ | Regression output | No nonlinearity |
+| Sigmoid | $$\frac{1}{1+e^{-x}}$$ | $$(0,1)$$ | Binary probability output | Saturation and vanishing gradients |
+| Tanh | $$\tanh(x)$$ | $$(-1,1)$$ | Some hidden/recurrent units | Saturation |
+| ReLU | $$\max(0,x)$$ | $$[0,\infty)$$ | Common hidden-layer activation | Dying ReLU |
+| Leaky ReLU | $$\max(\alpha x,x)$$ | Real values | Alternative hidden activation | Requires slope choice |
+| Softmax | $$\frac{e^{z_i}}{\sum_j e^{z_j}}$$ | Each output in $$(0,1)$$, sums to 1 | Multiclass output | Not for independent multilabel outputs |
+| GELU | $$x\Phi(x)$$ | Real values | Transformers and modern networks | More involved computation |
 
 ### 8.1 Sigmoid
 
-\[
+$$
 \sigma(x)=\frac{1}{1+e^{-x}}
-\]
+$$
 
 Sigmoid maps values into the interval from 0 to 1. It is often used to represent the positive-class probability in binary classification.
 
 ### 8.2 Tanh
 
-Tanh maps values into \((-1,1)\). It is zero-centered, but gradients can become small when the input magnitude is large.
+Tanh maps values into $(-1,1)$. It is zero-centered, but gradients can become small when the input magnitude is large.
 
 ### 8.3 ReLU
 
-\[
+$$
 ReLU(x)=\max(0,x)
-\]
+$$
 
 ReLU is simple and often effective for hidden layers. If a neuron consistently receives negative pre-activations, its gradient can be zero; this is known as the dying ReLU issue.
 
 ### 8.4 Softmax
 
-For logits \(z_1,\ldots,z_K\):
+For logits $z_1,\ldots,z_K$:
 
-\[
+$$
 P(y=i\mid x)=\frac{e^{z_i}}{\sum_{j=1}^{K}e^{z_j}}
-\]
+$$
 
 Softmax converts class scores into a normalized distribution for single-label multiclass classification.
 
@@ -393,34 +393,34 @@ A loss function measures the mismatch between model predictions and target value
 
 ### 10.1 Mean Squared Error (MSE)
 
-\[
+$$
 MSE = \frac{1}{N}\sum_{i=1}^{N}(y_i-\hat{y}_i)^2
-\]
+$$
 
 Common for regression. Large errors are penalized quadratically.
 
 ### 10.2 Mean Absolute Error (MAE)
 
-\[
+$$
 MAE = \frac{1}{N}\sum_{i=1}^{N}|y_i-\hat{y}_i|
-\]
+$$
 
 MAE is less sensitive to very large errors than MSE, though the best choice depends on the task.
 
 ### 10.3 Binary cross-entropy
 
-\[
+$$
 L=-\frac{1}{N}\sum_{i=1}^{N}
 [y_i\log(p_i)+(1-y_i)\log(1-p_i)]
-\]
+$$
 
-This expression uses predicted probabilities \(p_i\). Implementations should use numerically stable library functions.
+This expression uses predicted probabilities $p_i$. Implementations should use numerically stable library functions.
 
 ### 10.4 Categorical cross-entropy
 
-\[
+$$
 L=-\sum_{k=1}^{K}y_k\log(p_k)
-\]
+$$
 
 For one-hot targets, the loss penalizes low probability assigned to the true class.
 
@@ -437,15 +437,15 @@ Accuracy is easy to interpret but may be insufficient for imbalanced data. Cross
 
 Gradient descent updates parameters in the direction that reduces the loss.
 
-\[
+$$
 \theta_{t+1}=\theta_t-\eta\nabla_\theta L(\theta_t)
-\]
+$$
 
 Where:
-- \(\theta\): model parameters.
-- \(\eta\): learning rate.
-- \(L\): loss.
-- \(\nabla_\theta L\): gradient of the loss with respect to parameters.
+- $\theta$: model parameters.
+- $\eta$: learning rate.
+- $L$: loss.
+- $\nabla_\theta L$: gradient of the loss with respect to parameters.
 
 ### 11.1 Learning rate
 
@@ -465,9 +465,9 @@ Where:
 
 For 12,000 training examples and a batch size of 100:
 
-\[
+$$
 \text{Steps per epoch}=\left\lceil\frac{12000}{100}\right\rceil=120
-\]
+$$
 
 With 15 epochs, this is approximately 1,800 optimizer updates if every batch results in one update.
 
@@ -720,9 +720,9 @@ Transformers use attention to model relationships between elements. They are wid
 | Metric | Formula / meaning | Use |
 |---|---|---|
 | Accuracy | Correct predictions / total predictions | Balanced classes and similar error costs |
-| Precision | \(TP/(TP+FP)\) | False positives matter |
-| Recall | \(TP/(TP+FN)\) | False negatives matter |
-| Specificity | \(TN/(TN+FP)\) | Correctly recognizing negatives matters |
+| Precision | $$TP/(TP+FP)$$ | False positives matter |
+| Recall | $$TP/(TP+FN)$$ | False negatives matter |
+| Specificity | $$TN/(TN+FP)$$ | Correctly recognizing negatives matters |
 | F1-score | Harmonic mean of precision and recall | Balance precision and recall |
 | ROC-AUC | Ranking performance over thresholds | Binary score ranking |
 | PR-AUC | Precision-recall area | Often useful with class imbalance |
@@ -1210,7 +1210,7 @@ Prediction quality when labels become available, data drift, latency, throughput
 ### 28.1 Key points to remember
 
 - A neural network learns by adjusting weights and biases.
-- A neuron computes \(z=w^Tx+b\) and then applies an activation.
+- A neuron computes $z=w^Tx+b$ and then applies an activation.
 - Nonlinear activation functions let networks represent nonlinear relationships.
 - Forward propagation produces predictions.
 - Loss quantifies the prediction error.
@@ -1229,19 +1229,19 @@ Prediction quality when labels become available, data drift, latency, throughput
 
 | Concept | Formula |
 |---|---|
-| Neuron pre-activation | \(z=w^Tx+b\) |
-| Neuron output | \(a=\phi(z)\) |
-| Dense layer | \(z=Wx+b\) |
-| Sigmoid | \(\sigma(x)=\frac{1}{1+e^{-x}}\) |
-| ReLU | \(\max(0,x)\) |
-| Softmax | \(p_i=\frac{e^{z_i}}{\sum_j e^{z_j}}\) |
-| MSE | \(\frac{1}{N}\sum_i(y_i-\hat y_i)^2\) |
-| Gradient descent | \(\theta\leftarrow\theta-\eta\nabla_\theta L\) |
-| Dense parameters | \(n_{in}n_{out}+n_{out}\) |
-| Steps per epoch | \(\lceil N/\text{batch size}\rceil\) |
-| Precision | \(TP/(TP+FP)\) |
-| Recall | \(TP/(TP+FN)\) |
-| F1-score | \(2PR/(P+R)\) |
+| Neuron pre-activation | $$z=w^Tx+b$$ |
+| Neuron output | $$a=\phi(z)$$ |
+| Dense layer | $$z=Wx+b$$ |
+| Sigmoid | $$\sigma(x)=\frac{1}{1+e^{-x}}$$ |
+| ReLU | $$\max(0,x)$$ |
+| Softmax | $$p_i=\frac{e^{z_i}}{\sum_j e^{z_j}}$$ |
+| MSE | $$\frac{1}{N}\sum_i(y_i-\hat y_i)^2$$ |
+| Gradient descent | $$\theta\leftarrow\theta-\eta\nabla_\theta L$$ |
+| Dense parameters | $$n_{in}n_{out}+n_{out}$$ |
+| Steps per epoch | $$\lceil N/\text{batch size}\rceil$$ |
+| Precision | $$TP/(TP+FP)$$ |
+| Recall | $$TP/(TP+FN)$$ |
+| F1-score | $$2PR/(P+R)$$ |
 
 ### 28.3 Essential commands
 

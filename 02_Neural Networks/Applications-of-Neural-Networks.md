@@ -654,7 +654,7 @@ Choose metrics that reflect the actual cost of errors.
 | Task | Common metrics | What to consider |
 |---|---|---|
 | Classification | Accuracy, precision, recall, F1, ROC-AUC, PR-AUC | Class imbalance and error costs |
-| Regression | MAE, RMSE, \(R^2\) | Scale, outliers, and forecast horizon |
+| Regression | MAE, RMSE, ^2$ | Scale, outliers, and forecast horizon |
 | Object detection | IoU, precision/recall, mAP | Localization and confidence thresholds |
 | Segmentation | IoU, Dice score, per-class recall | Small regions and class imbalance |
 | Forecasting | MAE, RMSE, MASE or task-specific metrics | Seasonality and baseline performance |
