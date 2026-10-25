@@ -1,1412 +1,1529 @@
-# 📘 Loss Functions in Deep Learning
+# 📘 Loss Function in Deep Learning
 
-## 📑 Table of Contents
+## 📚 Table of Contents
 
-1. [🎯 Introduction](#-1-introduction)
-2. [🧠 What Is a Loss Function?](#-2-what-is-a-loss-function)
-3. [⚙️ How Loss Functions Work](#-3-how-loss-functions-work)
-4. [🔤 Important Terminology](#-4-important-terminology)
-5. [🧮 Mathematical Foundations](#-5-mathematical-foundations)
-6. [📚 Types of Loss Functions](#-6-types-of-loss-functions)
-7. [📊 Loss Functions by Task](#-7-loss-functions-by-task)
-8. [🆚 Comparison of Common Loss
-Functions](#-8-comparison-of-common-loss-functions)
-9. [💻 Practical Python Examples](#-9-practical-python-examples)
-10. [🧪 Mini-Project: Compare Regression
-Losses](#-10-mini-project-compare-regression-losses)
-11. [🌍 Real-World Use Cases](#-11-real-world-use-cases)
-12. [🚀 Advanced Concepts](#-12-advanced-concepts)
-13. [✅ Best Practices](#-13-best-practices)
-14. [⚠️ Common Mistakes](#-14-common-mistakes)
-15. [🎤 Interview Questions and
-Points](#-15-interview-questions-and-points)
-16. [⚡ Quick Revision](#-16-quick-revision)
+1.  [Introduction](#1--introduction)
+2.  [What Is a Loss Function?](#2--what-is-a-loss-function)
+3.  [Why Loss Functions Matter](#3--why-loss-functions-matter)
+4.  [Key Terminology](#4--key-terminology)
+5.  [How a Loss Function Works](#5--how-a-loss-function-works)
+6.  [Loss Function vs. Cost Function vs. Evaluation
+    Metric](#6--loss-function-vs-cost-function-vs-evaluation-metric)
+7.  [Types of Loss Functions](#7--types-of-loss-functions)
+8.  [Regression Loss Functions](#8--regression-loss-functions)
+9.  [Classification Loss Functions](#9--classification-loss-functions)
+10. [Loss Functions for Specialized
+    Tasks](#10--loss-functions-for-specialized-tasks)
+11. [Choosing the Right Loss
+    Function](#11--choosing-the-right-loss-function)
+12. [Practical Examples with
+    Python](#12--practical-examples-with-python)
+13. [Loss Functions in Neural-Network
+    Training](#13--loss-functions-in-neural-network-training)
+14. [Advanced Concepts](#14--advanced-concepts)
+15. [Real-World Use Cases](#15--real-world-use-cases)
+16. [Best Practices](#16--best-practices)
+17. [Common Mistakes and
+    Troubleshooting](#17--common-mistakes-and-troubleshooting)
+18. [Advantages and Limitations](#18--advantages-and-limitations)
+19. [Mini-Project: Compare Regression
+    Losses](#19--mini-project-compare-regression-losses)
+20. [Interview Questions and Key
+    Answers](#20--interview-questions-and-key-answers)
+21. [Quick Revision](#21--quick-revision)
 
----
+------------------------------------------------------------------------
 
-# 🎯 1. Introduction
+# 1. 🎯 Introduction
 
-A **loss function** is a mathematical function that measures how far a model's prediction is from the correct target. During training, a deep learning model uses the loss to determine how its parameters should be adjusted.
+Deep learning models learn patterns from data by adjusting their
+trainable parameters. To decide whether their predictions are good or
+poor, training needs a numerical measure of prediction error. A **loss
+function** provides that measure.
 
-A model typically learns by repeatedly:
+For example, a model may predict a house price of ₹52 lakh when the
+actual price is ₹50 lakh. A loss function converts the difference into a
+number that can guide model improvement.
 
-1. Making predictions during the forward pass.
-2. Calculating the loss by comparing predictions with target values.
-3. Computing gradients through backpropagation.
-4. Updating weights and biases using an optimizer.
-5. Repeating this process over many batches and epochs.
+Loss functions are central to supervised learning, but they are also
+used in self-supervised learning, representation learning, generative
+modeling, and reinforcement learning.
 
-The loss function is a central part of the learning objective. A poorly chosen loss can encourage the model to optimize the wrong behavior, even if the training process runs correctly.
+## 1.1 Learning objectives
 
-## 🎯 Learning Objectives
+After studying this topic, you should be able to:
 
-By the end of these notes, you should be able to:
+-   Explain the role of a loss function in neural-network training.
+-   Distinguish loss, cost, and evaluation metrics.
+-   Select common losses for regression, classification, and specialized
+    tasks.
+-   Implement and compare loss functions with Python.
+-   Recognize numerical, data-shape, and modeling issues that affect
+    loss.
+-   Understand gradients, class weighting, regularization, and composite
+    objectives.
 
-- Explain what a loss function does and how it differs from an
-evaluation metric.
-- Select appropriate losses for regression, classification,
-segmentation, and other tasks.
-- Understand the key formulas and assumptions behind common loss
-functions.
-- Implement losses using NumPy and TensorFlow/Keras or PyTorch.
-- Recognize issues such as class imbalance, outliers, saturation, and
-incorrect output activations.
-- Explain advanced ideas such as weighted losses, focal loss,
-contrastive loss, and multi-task loss.
+# 2. 🧠 What Is a Loss Function?
 
----
+A **loss function** is a mathematical function that measures how far a
+model's prediction is from the target value for a training example or
+batch.
 
-# 🧠 2. What Is a Loss Function?
+Let:
 
-A loss function maps a prediction and its target to a numerical measure of error.
+-   \(y\) be the true target.
+-   (`\hat{y}`{=tex}) be the model prediction.
+-   \(L\) be the loss function.
 
-For a single example:
+The loss is written as:
 
 $$
 L(y, \hat{y})
 $$
 
-Where:
+A lower loss generally indicates predictions that better match the
+target according to the chosen objective. It does **not** automatically
+guarantee good real-world performance or generalization.
 
-- $$y$$ is the true target.
-- $$\hat{y}$$ is the model prediction.
-- $$L$$ is the loss value.
+## 2.1 Simple example
 
-For a dataset containing $$N$$ examples, the average empirical loss is often:
+Suppose the actual value is 100 and the predicted value is 90.
 
-$$
-J(\theta) = \frac{1}{N}\sum_{i=1}^{N} L\left(y_i, f_\theta(x_i)\right)
-$$
-
-Where:
-
-- $$x_i$$ is the input for example $$i$$.
-- $$y_i$$ is its target.
-- $$f_\theta$$ is the model with parameters $$\theta$$.
-- $$J(\theta)$$ is the objective being minimized.
-
-The training objective may also include a regularization term:
+For absolute error:
 
 $$
-J(\theta) = \frac{1}{N}\sum_{i=1}^{N} L\left(y_i, f_\theta(x_i)\right) + \lambda R(\theta)
+L(y,\hat{y}) = |y-\hat{y}| = |100-90| = 10
 $$
 
-Here, $$R(\theta)$$ penalizes undesirable parameter configurations, and $$\lambda$$ controls the strength of regularization.
+For squared error:
 
-## 💡 Intuition
+$$
+L(y,\hat{y}) = (y-\hat{y})^2 = (100-90)^2 = 100
+$$
 
-Suppose a model predicts house prices:
+Both measure error, but they penalize it differently. Squared error
+penalizes large errors more strongly.
 
-Actual price   Predicted price   Absolute error -------------- ----------------- ---------------- ₹50 lakh          ₹48 lakh          ₹2 lakh ₹70 lakh          ₹75 lakh          ₹5 lakh ₹40 lakh          ₹39 lakh          ₹1 lakh
+## 2.2 What makes a useful loss function?
 
-A loss function converts these differences into a scalar value that can be optimized. Different loss functions penalize the same errors differently.
+A useful loss should match the task and the kind of mistakes that
+matter. Depending on the problem, it may need to be:
 
-## 🧩 Loss Function vs. Cost Function vs. Metric
+-   **Differentiable:** gradients can be computed for optimization, or
+    at least have useful subgradients.
+-   **Numerically stable:** calculations avoid overflow, underflow, and
+    invalid logarithms.
+-   **Task-aligned:** the objective encourages the behavior needed for
+    the application.
+-   **Appropriately scaled:** loss magnitude should work well with the
+    optimizer and other objective terms.
+-   **Robust when needed:** outliers or mislabeled examples should not
+    dominate training unintentionally.
 
-Terminology varies between textbooks and libraries, but a common distinction is:
+# 3. 🚀 Why Loss Functions Matter
 
------------------------------------------------------------------------ Term                    Meaning                 Example ----------------------- ----------------------- ----------------------- Loss                    Error for one example   Cross-entropy for one or a batch              batch
+A loss function helps translate a learning objective into an
+optimization problem.
 
-Cost/objective          Aggregate training      Mean batch loss or loss, possibly plus     full-dataset objective regularization
+-   It quantifies prediction error.
+-   It provides a signal used to calculate gradients.
+-   It guides parameter updates through an optimizer such as SGD or
+    Adam.
+-   It influences which errors the model prioritizes.
+-   It affects convergence, stability, and sometimes the final model
+    behavior.
 
-Evaluation metric       Quantity used to assess Accuracy, F1-score, MAE model performance
+Two models trained on the same dataset with different loss functions can
+learn different decision boundaries or prediction patterns.
 
-Optimizer               Algorithm that updates  SGD, Adam parameters using gradients -----------------------------------------------------------------------
-
-A metric is not necessarily differentiable. Accuracy, for example, is useful for evaluation but generally unsuitable as the direct training objective for standard gradient-based learning.
-
----
-
-# ⚙️ 3. How Loss Functions Work
-
-## 🔄 Training Workflow
+## 3.1 Training loop overview
 
 ``` mermaid
 flowchart TD
-    A[Input data] --> B[Neural network]
-    B --> C[Forward pass and predictions]
-    C --> D[Loss function compares predictions with targets]
-    D --> E[Scalar loss]
-    E --> F[Backpropagation computes gradients]
+    A[Training batch] --> B[Forward pass]
+    B --> C[Predictions]
+    C --> D[Calculate loss]
+    D --> E[Backpropagation]
+    E --> F[Calculate gradients]
     F --> G[Optimizer updates parameters]
-    G --> H{Training complete?}
-    H -- No --> A
-    H -- Yes --> I[Evaluate on validation and test data]
+    G --> H{More batches or epochs?}
+    H -- Yes --> A
+    H -- No --> I[Evaluate on validation/test data]
 ```
 
-## 🪜 Step-by-Step Example
+The loss function does not usually update the parameters by itself. It
+defines the objective; backpropagation calculates gradients, and the
+optimizer uses those gradients to update parameters.
 
-Assume the actual regression target is $$y=10$$ and the model predicts $$\hat{y}=7$$.
+# 4. 🧾 Key Terminology
 
-Using squared error for this example:
+  -----------------------------------------------------------------------
+  Term                                Meaning
+  ----------------------------------- -----------------------------------
+  Target / label                      The correct value associated with
+                                      an example
 
-$$
-L(y,\hat{y}) = (y-\hat{y})^2
-$$
+  Prediction                          The model's output
 
-$$
-L(10,7) = (10-7)^2 = 9
-$$
+  Residual / error                    Difference between target and
+                                      prediction; conventionally
+                                      (y-`\hat{y}`{=tex}) for regression
 
-The loss indicates the prediction is not exact. During training, backpropagation calculates how the loss changes with model parameters. The optimizer then adjusts parameters in a direction intended to reduce the objective.
+  Loss                                Error measure for one example or a
+                                      batch
 
-For mean squared error over a batch of $$N$$ examples:
+  Batch loss                          Loss aggregated over examples in a
+                                      mini-batch
 
-$$
-L_{\text{MSE}} = \frac{1}{N}\sum_{i=1}^{N}(y_i-\hat{y}_i)^2
-$$
+  Empirical risk                      Average loss over the training
+                                      dataset
 
-## 📉 Why Gradients Matter
+  Gradient                            Derivative of the objective with
+                                      respect to parameters
 
-For a simple squared error:
+  Backpropagation                     Efficient computation of gradients
+                                      through a network
 
-$$
-L = (y-\hat{y})^2
-$$
+  Optimizer                           Algorithm that updates model
+                                      parameters using gradients
 
-The derivative with respect to the prediction is:
+  Logit                               Raw model score before a sigmoid or
+                                      softmax transformation
 
-$$
-\frac{\partial L}{\partial \hat{y}} = 2(\hat{y}-y)
-$$
+  Regularization                      An objective term or method that
+                                      discourages undesirable model
+                                      complexity
 
-The derivative gives the direction and magnitude of the local change in loss with respect to the prediction. Backpropagation applies the chain rule to propagate this information through the network.
+  Epoch                               One full pass through the training
+                                      dataset
 
-## 🧭 Loss Landscape
+  Overfitting                         Strong training performance but
+                                      weaker performance on unseen data
 
-The loss landscape describes how the objective changes as model parameters change. Training tries to find parameter values with low loss, although non-convex deep learning objectives may contain saddle points, flat regions, and many local minima.
+  Underfitting                        Model fails to learn the training
+                                      patterns adequately
+  -----------------------------------------------------------------------
 
----
-
-# 🔤 4. Important Terminology
-
------------------------------------------------------------------------ Term                                Explanation ----------------------------------- ----------------------------------- Target/label                        The correct output associated with an input
-
-Prediction                          Output produced by the model
-
-Logit                               Raw model score before a probability-producing activation
-
-Probability                         A value interpreted as a probability, commonly between 0 and 1
-
-Batch                               A subset of examples processed in one training step
-
-Epoch                               One pass through the training dataset
-
-Gradient                            Derivative of the objective with respect to parameters
-
-Backpropagation                     Efficient calculation of gradients using the chain rule
-
-Optimizer                           Algorithm that updates trainable parameters
-
-Reduction                           How per-example losses are aggregated, such as mean or sum
-
-Class imbalance                     A dataset where classes have substantially different frequencies
-
-Label smoothing                     Replacing hard one-hot targets with softened target distributions
-
-Robust loss                         A loss designed to be less sensitive to certain data errors or outliers
-
-Calibration                         Agreement between predicted confidence and actual outcome frequencies -----------------------------------------------------------------------
-
-## 📌 Important Distinction: Logits and Probabilities
-
-For classification, models often produce logits. A softmax or sigmoid operation can transform logits into probabilities. Many library losses accept logits directly because they can combine activation and loss computation in a numerically stable way.
-
-Do not apply softmax or sigmoid twice. Always check whether the chosen loss expects logits or probabilities.
-
----
-
-# 🧮 5. Mathematical Foundations
-
-## 5.1 Empirical Risk Minimization
-
-The common training goal is to minimize average loss on the training data:
+For model parameters (`\theta`{=tex}), a typical empirical objective is:
 
 $$
-\theta^* = \arg\min_\theta \frac{1}{N}\sum_{i=1}^{N} L\left(y_i,f_\theta(x_i)\right)
+J(\theta) = \frac{1}{N}\sum_{i=1}^{N} L(y_i, f_\theta(x_i))
 $$
 
-This is called empirical risk minimization. The goal is not simply to memorize the training set; the model should generalize to unseen examples.
+Here, (N) is the number of examples, (x_i) is an input, (y_i) is its
+target, and (f\_`\theta`{=tex}) is the model.
 
-## 5.2 Gradient Descent
+# 5. ⚙️ How a Loss Function Works
 
-A basic gradient descent update is:
+Consider a neural network that predicts a value from an input. The
+network produces (`\hat{y}`{=tex}), the loss compares (`\hat{y}`{=tex})
+with (y), and differentiation tells us how changing the parameters would
+change the loss.
+
+## 5.1 The optimization process
+
+1.  Initialize model parameters.
+2.  Pass input data through the network.
+3.  Compute predictions.
+4.  Calculate the loss using predictions and targets.
+5.  Backpropagate the loss to calculate parameter gradients.
+6.  Use an optimizer to update parameters.
+7.  Repeat over batches and epochs.
+8.  Monitor validation performance to detect poor generalization.
+
+For gradient descent, a parameter update can be expressed as:
 
 $$
 \theta_{t+1} = \theta_t - \eta \nabla_\theta J(\theta_t)
 $$
 
-Where:
+Where (`\eta`{=tex}) is the learning rate and
+(`\nabla`{=tex}\_`\theta `{=tex}J) is the gradient of the objective with
+respect to the parameters.
 
-- $$\theta_t$$ represents parameters at step $$t$$.
-- $$\eta$$ is the learning rate.
-- $$\nabla_\theta J$$ is the gradient of the objective.
+## 5.2 Why gradients matter
 
-The loss defines what is optimized; the optimizer defines how parameters are updated.
+A scalar loss value tells us how large the current error is according to
+the objective. The gradient provides directional information for
+changing parameters to reduce that objective.
 
-## 5.3 Batch Reduction
+A loss can be differentiable everywhere, differentiable almost
+everywhere, or use subgradients at certain points. Neural-network
+training does not require every component to be smooth everywhere, but
+the chosen objective should provide useful optimization signals.
 
-For per-example losses $$L_1,\ldots,L_N$$:
+# 6. 🔍 Loss Function vs. Cost Function vs. Evaluation Metric
 
-**Mean reduction**
+These terms are sometimes used interchangeably in practice, but the
+following distinction is useful.
+
+  -----------------------------------------------------------------------
+  Concept                 Typical meaning         Example
+  ----------------------- ----------------------- -----------------------
+  Loss function           Error for one example   Cross-entropy for a
+                          or a batch              batch
+
+  Cost / objective        Aggregate training      Mean loss plus a
+  function                objective, possibly     penalty
+                          with regularization     
+
+  Evaluation metric       Measures performance in Accuracy, F1-score, MAE
+                          a way useful for        
+                          reporting or decisions  
+  -----------------------------------------------------------------------
+
+Terminology varies by textbook and framework. Some libraries call the
+batch-averaged objective a loss, while others use *cost* for the
+dataset-level average.
+
+## 6.1 Why the lowest training loss may not be best
+
+-   The model may overfit the training examples.
+-   The loss may not match the business or safety goal.
+-   The dataset may be imbalanced.
+-   Data leakage or distribution shift may make evaluation misleading.
+-   A model may improve average loss while worsening a critical subgroup
+    or class.
+
+Always examine validation metrics and, at the end, test-set metrics.
+Choose thresholds and model settings using validation data rather than
+repeatedly tuning on the test set.
+
+# 7. 🧰 Types of Loss Functions
+
+Loss functions can be grouped by the task they are designed to support.
+
+  -----------------------------------------------------------------------
+  Task                                Common loss functions
+  ----------------------------------- -----------------------------------
+  Regression                          MSE, MAE, Huber, Log-Cosh
+
+  Binary classification               Binary cross-entropy, focal loss
+
+  Multi-class classification          Categorical cross-entropy, sparse
+                                      categorical cross-entropy
+
+  Multi-label classification          Binary cross-entropy per label
+
+  Segmentation                        Cross-entropy, Dice loss,
+                                      IoU/Jaccard loss, focal loss
+
+  Object detection                    Classification loss, box regression
+                                      loss, overlap-based loss
+
+  Metric learning                     Contrastive loss, triplet loss
+
+  Generative models                   Adversarial, reconstruction,
+                                      perceptual, KL-divergence terms
+
+  Language modeling                   Token-level cross-entropy
+
+  Ranking                             Pairwise or listwise ranking losses
+  -----------------------------------------------------------------------
+
+The loss should be selected based on the target representation, output
+activation, label structure, and real-world objective.
+
+# 8. 📈 Regression Loss Functions
+
+Regression predicts a continuous value such as price, temperature,
+travel time, or demand.
+
+## 8.1 Mean Squared Error (MSE)
+
+MSE averages squared differences between targets and predictions.
 
 $$
-L_{\text{mean}} = \frac{1}{N}\sum_{i=1}^{N}L_i
+\operatorname{MSE} = \frac{1}{N}\sum_{i=1}^{N}(y_i-\hat{y}_i)^2
 $$
 
-**Sum reduction**
+### Example
+
+Actual values: 3 and 5. Predictions: 2 and 7.
 
 $$
-L_{\text{sum}} = \sum_{i=1}^{N}L_i
+\operatorname{MSE} = \frac{(3-2)^2+(5-7)^2}{2} = 2.5
 $$
 
-Mean reduction generally keeps loss scale more stable as batch size changes. Sum reduction can make gradient magnitude depend strongly on batch size. Weighted and masked losses may use other normalization schemes.
+**Advantages**
 
-## 5.4 Probabilistic Interpretation
+-   Smooth and convenient for gradient-based optimization.
+-   Strongly penalizes large errors.
+-   Commonly used when large deviations should be costly.
 
-Many losses correspond to likelihood-based estimation. Minimizing negative log-likelihood is equivalent to maximizing the likelihood of observed targets under the model's assumed probability distribution.
+**Limitations**
 
-Examples:
+-   Sensitive to outliers because errors are squared.
+-   Units are squared, making direct interpretation less intuitive.
+-   A few extreme errors can dominate the average.
 
-- Gaussian observation model with fixed variance leads to a
-squared-error objective, up to scaling and constants.
-- Laplace observation model leads to an absolute-error objective, up
-to scaling and constants.
-- Bernoulli targets lead to binary cross-entropy.
-- Categorical targets lead to categorical cross-entropy.
+**Use cases:** house-price prediction, demand forecasting, sensor-value
+prediction when large errors deserve extra penalty.
 
-These relationships explain why the statistical assumptions behind a loss matter.
+## 8.2 Mean Absolute Error (MAE)
 
----
-
-# 📚 6. Types of Loss Functions
-
-# 6.1 📏 Regression Loss Functions
-
-Regression predicts a continuous value such as price, temperature, distance, or demand.
-
-## A. Mean Squared Error (MSE)
-
-MSE squares the difference between actual and predicted values and averages the results.
+MAE averages the absolute differences.
 
 $$
-L_{\text{MSE}} = \frac{1}{N}\sum_{i=1}^{N}(y_i-\hat{y}_i)^2
+\operatorname{MAE} = \frac{1}{N}\sum_{i=1}^{N}|y_i-\hat{y}_i|
 $$
 
-**Example:** If the actual values are $$[3,5]$$ and predictions are $$[2,7]$$:
+**Advantages**
 
-$$
-L_{\text{MSE}} = \frac{(3-2)^2+(5-7)^2}{2} = 2.5
-$$
+-   Interpretable in the same units as the target.
+-   Less sensitive to outliers than MSE.
+-   Gives a linear penalty as error magnitude increases.
 
-**Advantages** - Smooth and differentiable. - Strongly penalizes large errors. - Commonly effective when large errors should be expensive.
+**Limitations**
 
-**Limitations** - Sensitive to outliers because errors are squared. - Units are squared, which can make interpretation less intuitive. - A few extreme errors can dominate the average.
+-   Not differentiable at zero, although a subgradient can be used.
+-   Often provides less emphasis on correcting very large errors than
+    MSE.
 
-**Use cases:** House-price prediction, sensor calibration, and regression tasks where large deviations deserve substantial penalties.
+**Use cases:** forecasting and pricing tasks where typical absolute
+deviation is easy to communicate.
 
-## B. Mean Absolute Error (MAE)
-
-MAE averages absolute differences.
-
-$$
-L_{\text{MAE}} = \frac{1}{N}\sum_{i=1}^{N}|y_i-\hat{y}_i|
-$$
-
-**Advantages** - More robust to outliers than MSE. - Error remains in the same unit as the target. - Easy to interpret.
-
-**Limitations** - Not differentiable at zero, although subgradients make it usable in modern frameworks. - Its gradient magnitude is constant away from zero, which may make optimization less smooth. - It can be less sensitive than MSE to large errors.
-
-**Use cases:** Demand prediction, price forecasting, and data with occasional extreme values.
-
-## C. Root Mean Squared Error (RMSE)
+## 8.3 Root Mean Squared Error (RMSE)
 
 RMSE is the square root of MSE.
 
 $$
-L_{\text{RMSE}} = \sqrt{\frac{1}{N}\sum_{i=1}^{N}(y_i-\hat{y}_i)^2}
+\operatorname{RMSE} = \sqrt{\frac{1}{N}\sum_{i=1}^{N}(y_i-\hat{y}_i)^2}
 $$
 
-RMSE is expressed in the target's original units and penalizes large errors more than MAE. Because the square root changes gradient behavior, RMSE is not identical to MSE as an optimization objective.
+RMSE is in the same units as the target and still penalizes large errors
+more heavily than MAE. It is commonly used as an evaluation metric; it
+can also be optimized, although its gradient scaling differs from MSE.
 
-## D. Huber Loss
+## 8.4 Huber loss
 
-Huber loss behaves quadratically for small errors and linearly for large errors.
+Huber loss behaves quadratically for small errors and linearly for large
+errors.
 
 $$
 L_\delta(y,\hat{y}) =
 \begin{cases}
-\frac{1}{2}(y-\hat{y})^2, & |y-\hat{y}| \le \delta \\
-\delta\left(|y-\hat{y}|-\frac{1}{2}\delta\right), & |y-\hat{y}| > \delta
+\frac{1}{2}(y-\hat{y})^2, & |y-\hat{y}|\leq\delta \\
+\delta\left(|y-\hat{y}|-\frac{1}{2}\delta\right), & |y-\hat{y}|>\delta
 \end{cases}
 $$
 
-Here, $$\delta$$ controls the transition point.
+Here, (`\delta`{=tex}) controls the transition between the quadratic and
+linear regions.
 
-**Advantages** - Smooth near zero. - Less sensitive to extreme outliers than MSE. - Combines useful properties of squared and absolute error.
+**Advantages:** combines smooth behavior near zero with reduced
+sensitivity to extreme errors.
 
-**Limitations** - Requires choosing an appropriate $$\delta$$. - Performance depends on the target scale and outlier distribution.
+**Limitations:** requires choosing a suitable (`\delta`{=tex}); its
+behavior depends on the target scale.
 
-**Use cases:** Robotics, object localization, and regression datasets containing noisy labels.
+**Use cases:** regression datasets with occasional outliers.
 
-## E. Log-Cosh Loss
+## 8.5 Log-Cosh loss
 
-Log-cosh is a smooth approximation to absolute error.
-
-$$
-L_{\text{log-cosh}} = \frac{1}{N}\sum_{i=1}^{N}\log\left(\cosh(\hat{y}_i-y_i)\right)
-$$
-
-For small errors, it behaves approximately quadratically; for large errors, it behaves approximately linearly.
-
-**Use cases:** Robust regression where a smooth objective is useful.
-
-## F. Mean Squared Logarithmic Error (MSLE)
-
-MSLE compares logarithms of nonnegative targets and predictions.
+Log-Cosh applies a smooth penalty that behaves approximately like
+squared error near zero and absolute error for large errors.
 
 $$
-L_{\text{MSLE}} = \frac{1}{N}\sum_{i=1}^{N}\left[\log(1+y_i)-\log(1+\hat{y}_i)\right]^2
+L(y,\hat{y}) = \log(\cosh(\hat{y}-y))
 $$
 
-**Use cases:** Nonnegative targets where relative differences matter, such as some growth or sales prediction tasks.
+**Advantages:** smooth and less sensitive to outliers than MSE.
 
-**Caution:** Targets and predictions must be in the valid domain; negative values are not directly supported by this formula.
+**Limitations:** may be less familiar and requires attention to
+numerical stability in custom implementations.
 
----
+## 8.6 Regression loss comparison
 
-# 6.2 🎯 Classification Loss Functions
+  -----------------------------------------------------------------------
+  Loss              Small-error       Large-error       Outlier
+                    behavior          behavior          sensitivity
+  ----------------- ----------------- ----------------- -----------------
+  MSE               Quadratic         Quadratic         High
 
-Classification predicts a category or class probability.
+  MAE               Linear            Linear            Lower than MSE
 
-## A. Binary Cross-Entropy (BCE)
+  RMSE              Based on squared  Based on squared  High
+                    errors            errors            
 
-Binary cross-entropy is used for binary classification, including independent multi-label outputs.
+  Huber             Quadratic         Linear            Moderate
 
-$$
-L_{\text{BCE}} = -\frac{1}{N}\sum_{i=1}^{N}\left[y_i\log(p_i)+(1-y_i)\log(1-p_i)\right]
-$$
+  Log-Cosh          Approximately     Approximately     Moderate
+                    quadratic         linear            
+  -----------------------------------------------------------------------
 
-Where $$y_i \in \{0,1\}$$ and $$p_i$$ is the predicted probability of the positive class.
+# 9. 🏷️ Classification Loss Functions
 
-For one example with target $$y=1$$ and predicted probability $$p=0.9$$:
+Classification predicts a class, such as spam/not spam,
+healthy/diseased, or one object category from several possibilities.
 
-$$
-L = -\log(0.9) \approx 0.105
-$$
+## 9.1 Binary cross-entropy (BCE)
 
-If the model predicts $$p=0.1$$ for that same positive target:
-
-$$
-L = -\log(0.1) \approx 2.303
-$$
-
-A confident correct prediction has low loss; a confident incorrect prediction has high loss.
-
-**Advantages** - Works naturally with probability-based binary classification. - Penalizes incorrect confident predictions. - Supports multi-label tasks by applying a binary objective to each label.
-
-**Limitations** - Can be affected by class imbalance. - Very confident wrong predictions can contribute large losses. - The target encoding and output/loss pairing must be correct.
-
-**Use cases:** Spam detection, fraud detection, disease classification, and independent tags such as image labels.
-
-## B. Categorical Cross-Entropy
-
-Categorical cross-entropy is commonly used for mutually exclusive multi-class classification.
+Binary cross-entropy is used when each example has a binary target,
+typically (y `\in `{=tex}{0,1}), and the model predicts a probability
+(p).
 
 $$
-L_{\text{CCE}} = -\frac{1}{N}\sum_{i=1}^{N}\sum_{k=1}^{K} y_{ik}\log(p_{ik})
+L(y,p) = -\left[y\log(p)+(1-y)\log(1-p)\right]
 $$
 
-Where:
+For a batch:
 
-- $$K$$ is the number of classes.
-- $$y_{ik}$$ is the target indicator or target probability for class
-$$k$$.
-- $$p_{ik}$$ is the predicted probability for class $$k$$.
+$$
+\operatorname{BCE} = -\frac{1}{N}\sum_{i=1}^{N}\left[y_i\log(p_i)+(1-y_i)\log(1-p_i)\right]
+$$
 
-With one-hot targets, only the true class contributes to the sum.
+A confident correct prediction receives a low loss. A confident
+incorrect prediction receives a high loss.
 
-**Use cases:** Classifying an image as cat, dog, or bird; recognizing a digit; classifying a document into one category.
+**Example:** if the true class is 1 and the model predicts (p=0.9), the
+loss is small. If it predicts (p=0.1), the loss is much larger.
 
-## C. Sparse Categorical Cross-Entropy
+### Common applications
 
-Sparse categorical cross-entropy has the same basic objective as categorical cross-entropy but accepts integer class labels instead of one-hot target vectors.
+-   Spam detection
+-   Fraud classification
+-   Binary medical-image classification
+-   Independent labels in multi-label classification
 
-Example labels:
+## 9.2 Categorical cross-entropy
 
-``` python
-y_true = [2, 0, 1, 2]
-```
+Categorical cross-entropy is common for multi-class classification where
+each example belongs to one of (K) classes. It is typically paired with
+softmax probabilities and one-hot targets.
 
-Use it when each example belongs to exactly one class and the framework expects integer labels. Confirm whether the loss expects logits or probabilities.
+$$
+L = -\sum_{k=1}^{K} y_k\log(p_k)
+$$
 
-## D. Softmax Cross-Entropy with Logits
+Where (y_k) is the target indicator for class (k), and (p_k) is the
+predicted probability for that class.
 
-For mutually exclusive multi-class classification, a model can output raw logits and use a numerically stable cross-entropy implementation that incorporates log-softmax internally.
+If the target class is (c), this simplifies to:
+
+$$
+L = -\log(p_c)
+$$
+
+The loss penalizes the model when it assigns a low probability to the
+correct class.
+
+## 9.3 Sparse categorical cross-entropy
+
+Sparse categorical cross-entropy is mathematically equivalent to
+categorical cross-entropy for single-label multi-class classification,
+but the target is stored as an integer class ID rather than a one-hot
+vector.
+
+  -----------------------------------------------------------------------
+  Property                Categorical             Sparse categorical
+                          cross-entropy           cross-entropy
+  ----------------------- ----------------------- -----------------------
+  Target format           One-hot / probability   Integer class ID
+                          distribution            
+
+  Example target          `[0, 1, 0]`             `1`
+
+  Typical use             Multi-class             Multi-class
+                          classification          classification
+
+  Loss meaning            Penalizes probability   Same objective
+                          assigned away from      
+                          target                  
+  -----------------------------------------------------------------------
+
+## 9.4 Softmax function
+
+Softmax transforms a vector of logits into a probability distribution.
 
 $$
 p_k = \frac{e^{z_k}}{\sum_{j=1}^{K}e^{z_j}}
 $$
 
-Where $$z_k$$ is the logit for class $$k$$.
+The probabilities sum to 1. In practice, use a framework's numerically
+stable cross-entropy implementation with logits when possible rather
+than manually applying softmax and logarithms.
 
-For a single example with target class $$t$$:
+## 9.5 Hinge loss
 
-$$
-L = -\log\left(\frac{e^{z_t}}{\sum_{j=1}^{K}e^{z_j}}\right)
-$$
-
-**Best practice:** Prefer a stable `from_logits=True` or equivalent loss when using raw logits, rather than manually applying softmax and then passing the result to a logits-based loss.
-
-## E. Hinge Loss
-
-Hinge loss is associated with maximum-margin classifiers, including support vector machines.
-
-For binary labels $$y \in \{-1,+1\}$$ and score $$f(x)$$:
+Hinge loss is often associated with support vector machines and
+margin-based classifiers. For binary labels (y `\in `{=tex}{-1,+1}) and
+score (f(x)):
 
 $$
-L_{\text{hinge}} = \max(0,1-yf(x))
+L(y,f(x)) = \max(0,1-yf(x))
 $$
 
-It encourages the correct class score to exceed a margin.
+It encourages the correct class score to exceed a margin. Hinge loss
+does not directly produce calibrated probabilities.
 
-**Advantages:** Margin-based interpretation and zero loss for examples that meet the margin.
+## 9.6 Focal loss
 
-**Limitations:** It is not a probability-calibration objective by itself and is less commonly used as the default for modern neural classification.
-
-## F. Kullback-Leibler (KL) Divergence
-
-KL divergence compares a target distribution $$P$$ with a predicted distribution $$Q$$.
-
-$$
-D_{\mathrm{KL}}(P\|Q) = \sum_i P(i)\log\frac{P(i)}{Q(i)}
-$$
-
-It measures how one probability distribution differs from another. It is asymmetric:
+Focal loss reduces the relative contribution of well-classified
+examples, focusing training more on difficult examples. One common
+binary form is:
 
 $$
-D_{\mathrm{KL}}(P\|Q) \ne D_{\mathrm{KL}}(Q\|P)
+FL(p_t) = -\alpha_t(1-p_t)^\gamma\log(p_t)
 $$
 
-**Use cases:** Knowledge distillation, variational methods, distribution matching, and soft-label training.
+Where (p_t) is the probability assigned to the true class,
+(`\alpha`{=tex}\_t) is a class-balancing factor, and (`\gamma`{=tex})
+controls focusing strength.
 
-**Caution:** Frameworks differ in the expected argument order and whether inputs should be probabilities or log-probabilities.
+**Use cases:** object detection and highly imbalanced classification.
 
-## G. Focal Loss
+**Caution:** excessive focusing or unsuitable class weights can harm
+calibration or cause the model to overemphasize noisy examples.
 
-Focal loss down-weights well-classified examples so training can focus more on hard examples.
+## 9.7 Class-weighted cross-entropy
 
-For binary classification:
-
-$$
-L_{\text{focal}} = -\alpha_t(1-p_t)^\gamma\log(p_t)
-$$
-
-Where:
-
-- $$p_t$$ is the predicted probability of the target class.
-- $$\alpha_t$$ balances class importance.
-- $$\gamma \ge 0$$ controls how strongly easy examples are
-down-weighted.
-
-When $$\gamma=0$$, focal loss reduces to a class-weighted cross-entropy form.
-
-**Use cases:** Object detection and severe class imbalance, such as detecting rare objects among many background examples.
-
-**Limitations:** Extra hyperparameters can make tuning harder; focal loss does not automatically solve every imbalance or data-quality problem.
-
----
-
-# 6.3 🖼️ Image Segmentation Losses
-
-Segmentation predicts a class for each pixel.
-
-## A. Dice Loss
-
-Dice similarity measures overlap between a predicted mask and the target mask. A smoothed Dice loss can be written as:
+When some classes are rare, class weights can increase the penalty for
+errors on those classes.
 
 $$
-L_{\text{Dice}} = 1 - \frac{2\sum_i p_i y_i + \epsilon}{\sum_i p_i + \sum_i y_i + \epsilon}
+L = -\sum_{k=1}^{K} w_k y_k\log(p_k)
 $$
 
-Where $$p_i$$ is the predicted foreground probability, $$y_i$$ is the target mask, and $$\epsilon$$ prevents division by zero.
+Weights should be selected carefully and estimated from training data
+only. A rare class is not automatically more important in every
+application; the weighting should reflect the task's costs and goals.
 
-**Advantages** - Directly encourages overlap. - Often useful when foreground pixels are rare.
+## 9.8 Binary vs. multi-class vs. multi-label
 
-**Limitations** - Batch-wise and per-image implementations can behave differently. - Smoothing and empty-mask handling matter. - It may be combined with cross-entropy for more stable optimization.
+  -----------------------------------------------------------------------
+  Problem           Example           Typical output    Common loss
+  ----------------- ----------------- ----------------- -----------------
+  Binary            Cat vs. dog       One logit or one  BCE with logits
+                                      probability       
 
-## B. Intersection over Union (IoU) / Jaccard Loss
+  Multi-class       Cat, dog, horse;  \(K\) logits      Cross-entropy
+                    exactly one class                   
 
-IoU measures intersection relative to union.
+  Multi-label       Image may contain One logit per     BCE with logits
+                    cat and car       label             per label
+                    together                            
+  -----------------------------------------------------------------------
 
-$$
-\operatorname{IoU} = \frac{|P \cap Y|}{|P \cup Y|}
-$$
+**Important:** Multi-class and multi-label are different problems.
+Softmax assumes mutually exclusive classes; independent sigmoid outputs
+are common for multi-label classification.
 
-A simple IoU loss is:
+# 10. 🧩 Loss Functions for Specialized Tasks
 
-$$
-L_{\text{IoU}} = 1 - \operatorname{IoU}
-$$
+## 10.1 Segmentation losses
 
-Soft variants use probabilities rather than hard masks to make the expression differentiable.
+Image segmentation predicts a class for each pixel.
 
-**Use cases:** Medical image segmentation, satellite imagery, and road-scene segmentation.
+-   **Pixel-wise cross-entropy:** treats each pixel as a classification
+    example.
+-   **Dice loss:** encourages overlap between predicted and true
+    regions.
+-   **IoU/Jaccard loss:** relates to intersection-over-union overlap.
+-   **Focal loss:** can reduce domination by easy background pixels.
+-   **Combined losses:** blend region overlap and pixel-wise
+    classification.
 
-## C. Binary Cross-Entropy + Dice Loss
-
-A combined objective can provide pixel-wise supervision and region-overlap optimization:
-
-$$
-L_{\text{combined}} = \lambda L_{\text{BCE}} + (1-\lambda)L_{\text{Dice}}
-$$
-
-The value of $$\lambda$$ controls the balance between the two terms.
-
-**Important:** The two losses can have different numerical scales. Tune weights and monitor validation performance rather than assuming equal weights are always optimal.
-
----
-
-# 6.4 📦 Object Detection Losses
-
-Object detection often combines several objectives:
-
-$$
-L_{\text{total}} = \lambda_{\text{box}}L_{\text{box}} + \lambda_{\text{cls}}L_{\text{cls}} + \lambda_{\text{obj}}L_{\text{obj}}
-$$
-
-Depending on the detector, the components can include:
-
-- **Box regression loss:** Measures bounding-box localization error.
-- **Classification loss:** Measures incorrect class predictions.
-- **Objectness/confidence loss:** Measures whether an object is
-present at a location.
-- **Distributional or auxiliary losses:** Used by particular detector
-architectures.
-
-### Bounding-Box Losses
-
------------------------------------------------------------------------ Loss                    Core idea               Typical role ----------------------- ----------------------- ----------------------- L1 / Smooth L1          Coordinate difference   Box coordinate regression
-
-IoU loss                Overlap between boxes   Direct overlap optimization
-
-GIoU                    Adds a penalty for the  Helps when boxes do not smallest enclosing box  overlap
-
-DIoU                    Adds center-distance    Encourages closer box penalty                 centers
-
-CIoU                    Adds center-distance    More complete geometric and aspect-ratio terms  box objective -----------------------------------------------------------------------
-
-The exact loss composition varies by model and version. Always inspect the implementation or documentation for the detector being used.
-
----
-
-# 6.5 🧠 Metric Learning and Representation Losses
-
-These losses help learn useful embeddings, often so similar examples are close and dissimilar examples are far apart.
-
-## A. Contrastive Loss
-
-A common contrastive objective for a pair of embeddings is:
+A common Dice score is:
 
 $$
-L = yD^2 + (1-y)\max(0,m-D)^2
+\operatorname{Dice} = \frac{2|P\cap G|+\epsilon}{|P|+|G|+\epsilon}
 $$
 
-In this convention, $$y=1$$ means a similar pair, $$D$$ is embedding distance, and $$m$$ is the margin for dissimilar pairs. Other implementations reverse the label convention, so verify the definition before using the formula.
-
-## B. Triplet Loss
-
-Triplet loss uses an anchor, a positive example, and a negative example.
+A corresponding Dice loss is:
 
 $$
-L_{\text{triplet}} = \max\left(0,D(a,p)-D(a,n)+m\right)
+L_{\text{Dice}} = 1-\operatorname{Dice}
 $$
 
-Where:
+Here, (P) is the predicted region, (G) is the ground-truth region, and
+(`\epsilon`{=tex}) helps avoid division by zero. Implementations differ
+in smoothing, aggregation across classes, and whether they use
+probabilities or thresholded masks.
 
-- $$a$$ is the anchor.
-- $$p$$ is a similar/positive example.
-- $$n$$ is a dissimilar/negative example.
-- $$m$$ is the required margin.
+## 10.2 Object detection losses
 
-**Use cases:** Face recognition, image retrieval, product matching, and identity verification.
+Object detectors typically combine multiple losses, such as:
 
-**Limitation:** Effective triplet mining and carefully constructed batches are important. Many triplets produce zero loss and no useful gradient.
+-   Classification loss for object classes.
+-   Bounding-box regression loss for box coordinates.
+-   Objectness or confidence loss, depending on architecture.
+-   Overlap-based loss, such as IoU variants, for localization.
 
-## C. Cosine Embedding Loss
-
-This loss encourages embeddings to have appropriate cosine similarity according to pair labels. It is useful when angular similarity matters more than vector magnitude.
-
----
-
-# 6.6 🎭 Generative and Self-Supervised Losses
-
------------------------------------------------------------------------ Loss                    Purpose                 Example application ----------------------- ----------------------- ----------------------- Reconstruction loss     Compare input with      Autoencoders reconstructed output
-
-Perceptual loss         Compare feature         Image super-resolution representations rather than only pixels
-
-Adversarial loss        Train a generator       GANs against a discriminator
-
-KL divergence term      Regularize latent       Variational distributions           autoencoders
-
-InfoNCE / contrastive   Separate positive and   Self-supervised objective               negative pairs in       learning representation space
-
-Diffusion denoising     Predict noise or        Diffusion models loss                    another training target at sampled timesteps -----------------------------------------------------------------------
-
-### Variational Autoencoder (VAE) Objective
-
-A common VAE objective combines reconstruction loss and KL divergence:
+A generic objective can be written as:
 
 $$
-L_{\text{VAE}} = L_{\text{reconstruction}} + \beta D_{\mathrm{KL}}\left(q_\phi(z|x)\|p(z)\right)
+L_{\text{total}} = \lambda_{\text{cls}}L_{\text{cls}} + \lambda_{\text{box}}L_{\text{box}} + \lambda_{\text{obj}}L_{\text{obj}}
 $$
 
-The parameter $$\beta$$ controls the strength of latent-distribution regularization in a beta-VAE-style objective.
+The exact components and weights vary by detector architecture. Do not
+assume every detector uses the same formula.
 
-### Generative Adversarial Networks (GANs)
+## 10.3 Contrastive and triplet losses
 
-GANs use objectives for both the generator and discriminator. The original minimax formulation is not the only option; practical GANs may use non-saturating, hinge, Wasserstein, or other objectives.
+Metric learning aims to make embeddings useful for similarity
+comparison.
 
----
+**Contrastive loss** encourages similar pairs to be close and dissimilar
+pairs to be separated by a margin.
 
-# 📊 7. Loss Functions by Task
+**Triplet loss** uses an anchor, a positive example of the same
+identity/class, and a negative example of a different identity/class.
 
----
+$$
+L_{\text{triplet}} = \max(0, d(a,p)-d(a,n)+m)
+$$
 
-Task                     Common starting point   Important considerations ------------------------ ----------------------- ----------------------- Binary classification    Binary cross-entropy    Use logits-aware loss when model outputs raw scores
+Where (d) is a distance function and (m) is the margin. The loss is zero
+when the negative is sufficiently farther from the anchor than the
+positive.
 
-Multi-class, one class   Categorical or sparse   Softmax/logits and per example              categorical             label format must match cross-entropy
+Use cases include face verification, image retrieval, and product
+similarity.
 
-Multi-label              Binary cross-entropy    Labels are not mutually classification           per label               exclusive
+## 10.4 Autoencoders and generative models
 
-Regression               MSE or MAE              Choose based on outliers and error cost
+Autoencoders often use reconstruction loss to compare an input with its
+reconstruction. Depending on the data, this may be MSE, MAE, or binary
+cross-entropy.
 
-Robust regression        Huber or log-cosh       Tune scale/transition parameters
+Variational autoencoders commonly combine reconstruction loss with a
+KL-divergence regularization term.
 
-Imbalanced               Weighted BCE/CE or      Also inspect sampling, classification           focal loss              data quality, and per-class metrics
+$$
+L_{\text{VAE}} = L_{\text{reconstruction}} + \beta D_{\text{KL}}(q(z|x)\,\|\,p(z))
+$$
 
-Semantic segmentation    CE, Dice, IoU, or a     Foreground imbalance combination             and empty masks
+The coefficient (`\beta`{=tex}) controls the trade-off between
+reconstruction and latent-distribution regularization.
 
-Object detection         Model-specific box,     Use the detector's class, and objectness   prescribed formulation losses
+Generative adversarial networks use adversarial objectives involving a
+generator and discriminator. Modern generative systems may combine
+adversarial, reconstruction, perceptual, diffusion-noise-prediction, or
+other objectives.
 
-Face recognition         Triplet or              Pair/triplet contrastive-style       construction is objective               critical
+## 10.5 Language models
 
-Autoencoder              Reconstruction loss     Match loss to data type and output activation
+Autoregressive language models commonly use token-level cross-entropy to
+train the model to predict the next token from previous context. Padding
+tokens are usually excluded from the loss, and training masks must be
+correct so the model is not trained on unintended target positions.
 
-VAE                      Reconstruction plus KL  Balance reconstruction term                    and latent regularization
+# 11. 🧭 Choosing the Right Loss Function
 
-Knowledge distillation   Soft-target CE or       Temperature and KL-based objective      reduction conventions matter
-
-Ranking/recommendation   Pairwise or listwise    Match the objective to ranking loss            ranking quality
----
-
----
-
-# 🆚 8. Comparison of Common Loss Functions
-
-## 8.1 Regression Loss Comparison
-
---------------------------------------------------------------------------------- Loss           Error penalty   Outlier        Differentiability   Best fit sensitivity -------------- --------------- -------------- ------------------- --------------- MSE            Quadratic       High           Smooth              Large errors should be strongly penalized
-
-MAE            Linear          Lower          Not differentiable  Robust, at zero             interpretable absolute error
-
-RMSE           Square root of  High           Smooth except       Reporting error average squared                special edge cases  in target units error
-
-Huber          Quadratic near  Moderate       Smooth at           Noisy zero, linear                   transition with     regression for large                      standard definition errors
-
-Log-cosh       Smooth,         Lower than MSE Smooth              Robust approximately                                      optimization quadratic then linear ---------------------------------------------------------------------------------
-
-## 8.2 Classification Loss Comparison
-
------------------------------------------------------------------------------------------------------- Loss            Typical task               Uses probabilities?        Main strength   Main caution --------------- -------------------------- -------------------------- --------------- ---------------- Binary          Binary / multi-label       Probability form or        Standard        Class imbalance cross-entropy                              logits-aware form          probabilistic objective
-
-Categorical     Multi-class                Probability form or        Penalizes low   Label/output cross-entropy                              logits-aware form          probability for format mismatch the true class
-
-Sparse          Multi-class integer labels Implementation-dependent   Avoids one-hot  Integer class categorical CE                             logits/probability input   encoding        IDs must be valid
-
-Hinge           Margin-based               No probability requirement Margin          Not inherently classification                                        optimization    calibrated
-
-Focal loss      Imbalanced                 Commonly                   Focuses on hard Hyperparameter classification/detection   probability/logits-based   examples        sensitivity implementations
-
-KL divergence   Distribution matching      Distribution or            Compares        Asymmetric; log-probability form       probability     argument distributions   convention matters ------------------------------------------------------------------------------------------------------
-
-## 8.3 Choosing a Loss: Decision Flow
+Use the target type and task requirements as the starting point.
 
 ``` mermaid
 flowchart TD
-    A[Identify the prediction task] --> B{What is the target?}
+    A[Identify the learning task] --> B{What is the target?}
     B -->|Continuous value| C{Are outliers important?}
     C -->|Large errors need strong penalty| D[MSE]
-    C -->|Want more robustness| E[MAE or Huber]
-    B -->|One class per example| F[Cross-entropy]
-    B -->|Multiple independent labels| G[Binary cross-entropy per label]
-    B -->|Pixel mask| H[Cross-entropy, Dice, IoU, or combination]
-    B -->|Bounding boxes| I[Detector-specific box and classification losses]
-    B -->|Embedding similarity| J[Contrastive or triplet objective]
-    B -->|Generated/reconstructed data| K[Reconstruction or generative objective]
+    C -->|Need robustness to outliers| E[MAE or Huber]
+    B -->|One of two classes| F[BCE with logits]
+    B -->|Exactly one of many classes| G[Cross-entropy with logits]
+    B -->|Multiple independent labels| H[BCE with logits per label]
+    B -->|Pixel masks or regions| I[Cross-entropy, Dice, or combined loss]
+    B -->|Embeddings and similarity| J[Contrastive or triplet loss]
+    D --> K[Validate against task metrics]
+    E --> K
+    F --> K
+    G --> K
+    H --> K
+    I --> K
+    J --> K
 ```
 
----
+## 11.1 Decision checklist
 
-# 💻 9. Practical Python Examples
+1.  Is the target continuous, categorical, multi-label, structured, or
+    an embedding?
+2.  What output does the model produce: logits, probabilities,
+    coordinates, or a mask?
+3.  Which mistakes are most costly?
+4.  Are classes imbalanced?
+5.  Are labels noisy or are there extreme outliers?
+6.  Does the framework expect integer or one-hot targets?
+7.  Is the loss numerically stable and compatible with the model output?
+8.  Which validation metrics reflect the real objective?
 
-## 9.1 Calculate Losses with NumPy
+## 11.2 Loss and output activation compatibility
+
+  -----------------------------------------------------------------------
+  Task                    Model output            Preferred
+                                                  implementation pattern
+  ----------------------- ----------------------- -----------------------
+  Binary classification   One raw logit           BCE-with-logits loss
+
+  Multi-class             \(K\) raw logits        Cross-entropy loss
+  classification                                  
+
+  Multi-label             One raw logit per label BCE-with-logits loss
+  classification                                  
+
+  Regression              Real-valued output      MSE, MAE, Huber, etc.
+
+  Segmentation            Per-pixel logits        Pixel-wise
+                                                  cross-entropy and/or
+                                                  overlap loss
+  -----------------------------------------------------------------------
+
+Many libraries combine the activation and loss calculation for numerical
+stability. Avoid applying sigmoid or softmax twice when the selected
+loss already expects logits.
+
+# 12. 💻 Practical Examples with Python
+
+## 12.1 Calculate basic regression losses manually
 
 ``` python
 import numpy as np
 
-y_true = np.array([3.0, 5.0, 2.0, 8.0])
-y_pred = np.array([2.5, 5.5, 4.0, 7.0])
+y_true = np.array([3.0, 5.0, 2.0, 7.0])
+y_pred = np.array([2.5, 5.5, 4.0, 6.0])
 
-mse = np.mean((y_true - y_pred) ** 2)
-mae = np.mean(np.abs(y_true - y_pred))
+errors = y_true - y_pred
+mae = np.mean(np.abs(errors))
+mse = np.mean(errors ** 2)
 rmse = np.sqrt(mse)
 
-print(f"MSE:  {mse:.4f}")
-print(f"MAE:  {mae:.4f}")
-print(f"RMSE: {rmse:.4f}")
+print(f"MAE:  {mae:.3f}")
+print(f"MSE:  {mse:.3f}")
+print(f"RMSE: {rmse:.3f}")
 ```
 
-**Explanation:** The same predictions can produce different loss values because each function penalizes errors differently.
+**Explanation:** NumPy calculates each error, averages absolute or
+squared errors, and takes the square root of MSE for RMSE.
 
-## 9.2 Binary Cross-Entropy with NumPy
-
-``` python
-import numpy as np
-
-y_true = np.array([1, 0, 1, 1], dtype=float)
-y_prob = np.array([0.90, 0.20, 0.65, 0.40], dtype=float)
-
-# Clip probabilities to avoid log(0).
-eps = 1e-7
-y_prob = np.clip(y_prob, eps, 1 - eps)
-
-bce = -np.mean(
-    y_true * np.log(y_prob)
-    + (1 - y_true) * np.log(1 - y_prob)
-)
-
-print(f"Binary cross-entropy: {bce:.4f}")
-```
-
-**Explanation:** Clipping protects this educational probability-based implementation from undefined logarithms. In production training, prefer a numerically stable framework loss that accepts logits when appropriate.
-
-## 9.3 TensorFlow / Keras: Regression
+## 12.2 Loss functions with TensorFlow / Keras
 
 ``` python
 import tensorflow as tf
-from tensorflow import keras
-from tensorflow.keras import layers
 
-model = keras.Sequential([
+# Regression
+mse_loss = tf.keras.losses.MeanSquaredError()
+mae_loss = tf.keras.losses.MeanAbsoluteError()
+huber_loss = tf.keras.losses.Huber(delta=1.0)
+
+y_true_reg = tf.constant([[3.0], [5.0], [2.0]])
+y_pred_reg = tf.constant([[2.5], [5.5], [4.0]])
+
+print("MSE:", mse_loss(y_true_reg, y_pred_reg).numpy())
+print("MAE:", mae_loss(y_true_reg, y_pred_reg).numpy())
+print("Huber:", huber_loss(y_true_reg, y_pred_reg).numpy())
+
+# Binary classification: output logits, not probabilities
+bce_loss = tf.keras.losses.BinaryCrossentropy(from_logits=True)
+labels = tf.constant([[1.0], [0.0], [1.0]])
+logits = tf.constant([[2.0], [-1.0], [0.4]])
+print("Binary cross-entropy:", bce_loss(labels, logits).numpy())
+
+# Multi-class classification: integer labels and raw logits
+ce_loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
+class_ids = tf.constant([2, 0, 1])
+class_logits = tf.constant([
+    [0.1, 0.2, 2.0],
+    [2.0, 0.1, 0.0],
+    [0.2, 1.8, 0.1],
+])
+print("Sparse categorical cross-entropy:", ce_loss(class_ids, class_logits).numpy())
+```
+
+**Explanation:** `from_logits=True` tells the loss to receive raw
+logits. Do not pass already-softmaxed probabilities to a loss configured
+to expect logits.
+
+## 12.3 Loss functions with PyTorch
+
+``` python
+import torch
+import torch.nn as nn
+
+# Regression
+y_true = torch.tensor([[3.0], [5.0], [2.0]])
+y_pred = torch.tensor([[2.5], [5.5], [4.0]])
+
+mse = nn.MSELoss()(y_pred, y_true)
+mae = nn.L1Loss()(y_pred, y_true)
+huber = nn.HuberLoss(delta=1.0)(y_pred, y_true)
+
+print("MSE:", mse.item())
+print("MAE:", mae.item())
+print("Huber:", huber.item())
+
+# Binary classification: BCEWithLogitsLoss expects raw logits
+binary_logits = torch.tensor([[2.0], [-1.0], [0.4]])
+binary_targets = torch.tensor([[1.0], [0.0], [1.0]])
+binary_loss = nn.BCEWithLogitsLoss()(binary_logits, binary_targets)
+print("BCE:", binary_loss.item())
+
+# Multi-class classification: CrossEntropyLoss expects raw logits
+class_logits = torch.tensor([
+    [0.1, 0.2, 2.0],
+    [2.0, 0.1, 0.0],
+    [0.2, 1.8, 0.1],
+])
+class_targets = torch.tensor([2, 0, 1], dtype=torch.long)
+class_loss = nn.CrossEntropyLoss()(class_logits, class_targets)
+print("Cross-entropy:", class_loss.item())
+```
+
+**Important PyTorch conventions:**
+
+-   `CrossEntropyLoss` expects raw logits and class-index targets of
+    type `long` for the usual class-index case.
+-   `BCEWithLogitsLoss` expects raw logits and floating-point targets
+    with compatible shapes.
+-   Ensure batch dimensions and target shapes match the model outputs.
+
+## 12.4 A simple Keras model using a loss function
+
+``` python
+import tensorflow as tf
+from tensorflow.keras import layers, models
+
+model = models.Sequential([
     layers.Input(shape=(10,)),
-    layers.Dense(64, activation="relu"),
     layers.Dense(32, activation="relu"),
+    layers.Dense(16, activation="relu"),
     layers.Dense(1)  # Linear output for regression
 ])
 
 model.compile(
-    optimizer=keras.optimizers.Adam(learning_rate=1e-3),
-    loss="mse",
-    metrics=["mae"]
+    optimizer=tf.keras.optimizers.Adam(learning_rate=1e-3),
+    loss=tf.keras.losses.Huber(delta=1.0),
+    metrics=[tf.keras.metrics.MeanAbsoluteError(name="mae")]
 )
 
-# X_train shape: (number_of_samples, 10)
-# y_train shape: (number_of_samples,) or (number_of_samples, 1)
-# model.fit(X_train, y_train, validation_split=0.2, epochs=20, batch_size=32)
+# X_train: shape (samples, 10)
+# y_train: shape (samples,) or (samples, 1)
+# history = model.fit(
+#     X_train, y_train,
+#     validation_split=0.2,
+#     epochs=50,
+#     batch_size=32,
+#     callbacks=[
+#         tf.keras.callbacks.EarlyStopping(
+#             monitor="val_loss",
+#             patience=5,
+#             restore_best_weights=True
+#         )
+#     ]
+# )
 ```
 
-**Explanation:** MSE is the training objective; MAE is tracked as an additional metric. The final layer has no activation because regression targets are assumed to be unrestricted real values.
+The loss is the optimization objective. MAE is included as an
+interpretable metric. Early stopping monitors validation loss and
+restores the weights from the best monitored epoch.
 
-## 9.4 TensorFlow / Keras: Multi-Class Classification
+# 13. 🧪 Loss Functions in Neural-Network Training
+
+## 13.1 Training loss and validation loss
+
+-   **Training loss:** computed on examples used for parameter updates.
+-   **Validation loss:** computed on held-out data used to monitor
+    generalization and select training settings.
+-   **Test loss:** computed on a final held-out test set after model
+    choices are finalized.
+
+Typical patterns:
+
+  -----------------------------------------------------------------------
+  Training loss           Validation loss         Possible interpretation
+  ----------------------- ----------------------- -----------------------
+  Decreasing              Decreasing              Learning useful
+                                                  patterns
+
+  Decreasing              Increasing              Possible overfitting
+
+  High and flat           High and flat           Underfitting,
+                                                  optimization
+                                                  difficulty, or data
+                                                  issues
+
+  Unstable or exploding   Unstable or exploding   Learning rate, scaling,
+                                                  numerical, or gradient
+                                                  issues
+
+  Low                     Much higher             Generalization gap,
+                                                  leakage, or
+                                                  distribution
+                                                  differences
+  -----------------------------------------------------------------------
+
+These patterns are diagnostic clues, not absolute rules.
+
+## 13.2 Reduction: `none`, `sum`, and `mean`
+
+A loss function may return one value per example or aggregate values
+across a batch.
+
+-   `none`: keep individual losses.
+-   `sum`: add the losses.
+-   `mean`: average the losses, according to the framework's reduction
+    definition.
+
+Reduction changes the scale of the gradient and can affect optimization,
+especially when batch size or the number of valid tokens/pixels changes.
+
+## 13.3 Regularization and total objective
+
+A model objective may combine prediction loss with a regularization
+penalty.
+
+$$
+J(\theta) = L_{\text{data}}(\theta) + \lambda R(\theta)
+$$
+
+Here, (R(`\theta`{=tex})) penalizes a property such as large weights,
+and (`\lambda`{=tex}) controls the strength of that penalty.
+
+Regularization can improve generalization, but too much may cause
+underfitting. Some techniques, such as dropout, act during training
+without necessarily appearing as a simple explicit penalty in the
+displayed loss.
+
+# 14. 🔬 Advanced Concepts
+
+## 14.1 Class imbalance
+
+When one class dominates the dataset, an unweighted loss may be driven
+mainly by that class. Possible approaches include:
+
+-   Class-weighted loss.
+-   Focal loss.
+-   Balanced sampling or carefully designed batch construction.
+-   Collecting more representative examples.
+-   Evaluating per-class precision, recall, F1-score, and confusion
+    matrices.
+
+Do not use accuracy alone when minority-class performance matters.
+Resampling and weighting can change calibration and should be evaluated
+on a realistic validation distribution.
+
+## 14.2 Label smoothing
+
+Label smoothing replaces hard one-hot targets with a slightly softened
+distribution. It can reduce overconfidence in some classification
+settings.
+
+For (K) classes and smoothing factor (`\epsilon`{=tex}), one common
+convention assigns the target class probability (1-`\epsilon`{=tex}) and
+distributes (`\epsilon`{=tex}) across the other classes. Framework
+conventions differ, so check the exact implementation.
+
+Potential benefits include improved calibration or generalization in
+some tasks. Potential drawbacks include reduced confidence or
+performance when labels are clean and the task benefits from sharp
+targets.
+
+## 14.3 Numerical stability
+
+Cross-entropy involves logarithms and probabilities. Directly
+calculating `log(softmax(logits))` can be unstable for extreme logits.
+Framework functions such as `CrossEntropyLoss` and `BCEWithLogitsLoss`
+use stable formulations.
+
+Best practices:
+
+-   Use built-in loss functions.
+-   Avoid taking `log(0)`.
+-   Check for NaN and infinity in predictions, losses, and gradients.
+-   Normalize inputs when appropriate.
+-   Be careful with mixed-precision training and extreme values.
+
+## 14.4 Multi-task and composite loss
+
+A model can solve several tasks simultaneously, such as predicting both
+object class and bounding box. Its total loss is often a weighted sum:
+
+$$
+L_{\text{total}} = \sum_{i=1}^{T}\lambda_i L_i
+$$
+
+The (`\lambda`{=tex}\_i) weights determine the relative influence of
+each task. A loss with a much larger numerical scale can dominate the
+combined objective unless the weighting or normalization is suitable.
+
+Advanced methods include uncertainty-based weighting, gradient
+balancing, and adaptive loss weighting. These methods add complexity and
+should be justified by measurable improvements.
+
+## 14.5 Loss landscape and optimization
+
+The loss as a function of model parameters forms a high-dimensional
+landscape. Neural networks are non-convex, so optimization may encounter
+saddle points, flat regions, or sharp regions. The optimizer, learning
+rate, architecture, initialization, batch size, and data all influence
+training behavior.
+
+A lower training objective does not necessarily mean a better model on
+unseen data.
+
+## 14.6 Probabilistic interpretation
+
+Several losses have probabilistic interpretations:
+
+-   MSE corresponds to a Gaussian observation model with fixed variance,
+    up to scaling and constants.
+-   MAE corresponds to a Laplace observation model, up to scaling and
+    constants.
+-   Cross-entropy corresponds to negative log-likelihood for categorical
+    or Bernoulli targets.
+
+These connections help explain why different losses encode different
+assumptions about the data and errors.
+
+# 15. 🌍 Real-World Use Cases
+
+  -------------------------------------------------------------------------
+  Application       Typical model     Possible loss       Important
+                    output                                consideration
+  ----------------- ----------------- ------------------- -----------------
+  House-price       Continuous price  MSE, MAE, Huber     Outliers and
+  prediction                                              target scaling
+
+  Disease image     Class logits      Cross-entropy       Class-wise recall
+  classification                                          and clinical
+                                                          validation
+
+  Fraud detection   Binary logit      BCE with logits,    Rare positives
+                                      weighted BCE        and decision
+                                                          thresholds
+
+  Road pothole      Class and box     Detector-specific   Localization
+  detection         predictions       combined loss       quality and class
+                                                          imbalance
+
+  Semantic          Per-pixel logits  Cross-entropy, Dice Small foreground
+  segmentation                                            regions
+
+  Demand            Future numerical  MAE, MSE, Huber     Forecast horizon
+  forecasting       values                                and seasonal
+                                                          errors
+
+  Face verification Embeddings        Contrastive or      Pair/triplet
+                                      triplet loss        sampling and
+                                                          evaluation
+                                                          protocol
+
+  Language modeling Next-token logits Token cross-entropy Correct masking
+                                                          and ignored
+                                                          padding tokens
+  -------------------------------------------------------------------------
+
+In high-stakes settings, a loss function is only one part of the
+evaluation process. Data quality, subgroup performance, calibration,
+robustness, privacy, and domain-specific validation remain essential.
+
+# 16. ✅ Best Practices
+
+1.  **Match the loss to the target.** Regression, multi-class, and
+    multi-label problems need different objectives.
+2.  **Check the expected input.** Determine whether the loss expects
+    logits or probabilities.
+3.  **Verify target format.** Integer class IDs, one-hot labels, and
+    floating-point binary targets are not interchangeable.
+4.  **Inspect tensor shapes.** Unintended broadcasting can produce a
+    valid-looking but incorrect loss.
+5.  **Use a stable built-in implementation.** Avoid hand-written
+    probability calculations unless needed and carefully tested.
+6.  **Track validation loss and relevant metrics.** Loss alone may not
+    represent the task's practical goal.
+7.  **Handle imbalance deliberately.** Use weights or focal loss only
+    when justified by the data and application.
+8.  **Scale targets thoughtfully.** Large target magnitudes can make
+    optimization difficult; remember to transform predictions back for
+    reporting.
+9.  **Set a baseline.** Compare against a simple model or naive
+    prediction.
+10. **Keep the test set untouched during tuning.** Use validation data
+    to select loss settings and thresholds.
+11. **Log experiment configuration.** Record loss, reduction, weights,
+    optimizer, learning rate, data split, and random seed.
+12. **Check gradients and values.** Watch for NaN, infinity, exploding
+    loss, or zero gradients.
+13. **Consider the cost of mistakes.** A loss function encodes
+    preferences, so ensure those preferences fit the real application.
+14. **Test edge cases.** Include perfect predictions, extreme
+    predictions, empty masks, and rare classes where applicable.
+
+# 17. ⚠️ Common Mistakes and Troubleshooting
+
+  -----------------------------------------------------------------------
+  Mistake                 Why it is a problem     Fix
+  ----------------------- ----------------------- -----------------------
+  Applying softmax before Can cause incorrect     Pass raw logits and
+  a loss that expects     calculations or         configure the loss
+  logits                  numerical instability   appropriately
+
+  Using categorical       Target format does not  Use sparse categorical
+  cross-entropy with      match the loss          cross-entropy or
+  integer labels in an                            one-hot encode
+  incompatible setup                              correctly
+
+  Using BCE for mutually  Does not encode the     Use categorical
+  exclusive classes       same normalized         cross-entropy for
+  without a reason        multi-class objective   standard single-label
+                                                  multi-class tasks
+
+  Comparing raw loss      Scales and meanings     Compare task metrics
+  values across different differ                  and validate each
+  loss types                                      objective
+
+  Ignoring class          Majority class may      Inspect class counts
+  imbalance               dominate learning       and per-class metrics
+
+  Training loss decreases May indicate            Early stopping,
+  while validation loss   overfitting             regularization,
+  rises                                           augmentation, or more
+                                                  data
+
+  Loss becomes NaN        Could be invalid        Check data, logits,
+                          inputs, extreme values, learning rate, and
+                          or unstable             numerical operations
+                          calculations            
+
+  Wrong tensor shape      Broadcasting may        Print shapes and assert
+                          silently compare        expected dimensions
+                          unintended values       
+
+  Using accuracy as the   Can hide minority-class Add precision, recall,
+  only metric             failures                F1, calibration, and
+                                                  task-specific metrics
+
+  Choosing weights from   Leaks test information  Estimate weights on
+  the test set            into model selection    training data; tune
+                                                  with validation data
+  -----------------------------------------------------------------------
+
+## 17.1 Troubleshooting checklist
 
 ``` python
-import tensorflow as tf
-from tensorflow import keras
-from tensorflow.keras import layers
+# PyTorch example: basic checks during debugging
+print("logits shape:", logits.shape)
+print("targets shape:", binary_targets.shape)
+print("logits finite:", torch.isfinite(logits).all().item())
 
-num_features = 20
-num_classes = 4
-
-model = keras.Sequential([
-    layers.Input(shape=(num_features,)),
-    layers.Dense(64, activation="relu"),
-    layers.Dense(32, activation="relu"),
-    layers.Dense(num_classes)  # Raw logits
-])
-
-model.compile(
-    optimizer=keras.optimizers.Adam(learning_rate=1e-3),
-    loss=keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-    metrics=["accuracy"]
-)
-
-# y_train contains integer class IDs: 0, 1, 2, or 3.
-# model.fit(X_train, y_train, validation_split=0.2, epochs=15)
+loss = nn.BCEWithLogitsLoss()(logits, binary_targets)
+print("loss:", loss.item())
+assert torch.isfinite(loss), "Loss is NaN or infinity"
 ```
 
-**Explanation:** `from_logits=True` tells the loss to interpret the final layer's values as raw logits. Do not add a softmax layer to this model unless you also adjust the loss configuration accordingly.
+If loss is not improving, also check labels, preprocessing, learning
+rate, model capacity, gradient flow, and whether the inputs contain
+predictive information.
 
-## 9.5 TensorFlow / Keras: Multi-Label Classification
+# 18. ⚖️ Advantages and Limitations
 
-``` python
-import tensorflow as tf
-from tensorflow import keras
-from tensorflow.keras import layers
+## 18.1 Advantages
 
-num_features = 30
-num_labels = 5
+-   Converts a learning goal into an objective that can be optimized.
+-   Provides gradients for neural-network training.
+-   Supports many task types, from regression to structured prediction.
+-   Can encode priorities such as robustness or class importance.
+-   Makes training progress measurable over time.
 
-model = keras.Sequential([
-    layers.Input(shape=(num_features,)),
-    layers.Dense(64, activation="relu"),
-    layers.Dense(num_labels)  # One logit per independent label
-])
+## 18.2 Limitations
 
-model.compile(
-    optimizer="adam",
-    loss=keras.losses.BinaryCrossentropy(from_logits=True),
-    metrics=[
-        keras.metrics.BinaryAccuracy(
-            threshold=0.0  # Appropriate for logits
-        )
-    ]
-)
+-   A poorly chosen loss can optimize the wrong behavior.
+-   The loss may not align with the metric or real-world cost.
+-   Outliers, class imbalance, and noisy labels can distort training.
+-   Composite objectives require sensible scaling and weighting.
+-   Loss values from different objectives are not directly comparable.
+-   A decreasing training loss does not guarantee generalization,
+    fairness, calibration, or safety.
+
+# 19. 🛠️ Mini-Project: Compare Regression Losses
+
+## 19.1 Objective
+
+Compare MSE, MAE, and Huber loss on a small synthetic regression dataset
+containing an outlier. Observe how the loss choice changes the training
+objective.
+
+## 19.2 Install dependencies
+
+``` bash
+pip install numpy matplotlib scikit-learn
 ```
 
-**Explanation:** Multi-label tasks allow more than one label to be true at once. Each output is treated as a separate binary decision. A softmax is generally inappropriate when labels are independent.
-
-## 9.6 PyTorch: Regression Losses
-
-``` python
-import torch
-import torch.nn as nn
-
-y_true = torch.tensor([3.0, 5.0, 2.0, 8.0])
-y_pred = torch.tensor([2.5, 5.5, 4.0, 7.0])
-
-mse_loss = nn.MSELoss()(y_pred, y_true)
-mae_loss = nn.L1Loss()(y_pred, y_true)
-huber_loss = nn.HuberLoss(delta=1.0)(y_pred, y_true)
-
-print("MSE:", mse_loss.item())
-print("MAE:", mae_loss.item())
-print("Huber:", huber_loss.item())
-```
-
-## 9.7 PyTorch: Multi-Class Classification with Logits
-
-``` python
-import torch
-import torch.nn as nn
-
-# Shape: (batch_size, number_of_classes)
-logits = torch.tensor([
-    [2.5, 0.3, -0.4],
-    [0.1, 1.8, 0.2]
-])
-
-# Shape: (batch_size,), integer class IDs
-targets = torch.tensor([0, 1])
-
-criterion = nn.CrossEntropyLoss()
-loss = criterion(logits, targets)
-
-print("Cross-entropy loss:", loss.item())
-```
-
-**Important:** `nn.CrossEntropyLoss` expects raw logits and integer class indices for this common usage. Do not apply softmax first.
-
-## 9.8 PyTorch: Binary Classification with Logits
-
-``` python
-import torch
-import torch.nn as nn
-
-logits = torch.tensor([1.5, -0.7, 0.2])
-targets = torch.tensor([1.0, 0.0, 1.0])
-
-criterion = nn.BCEWithLogitsLoss()
-loss = criterion(logits, targets)
-
-print("Binary loss:", loss.item())
-```
-
-`BCEWithLogitsLoss` combines sigmoid and binary cross-entropy in a numerically stable way.
-
-## 9.9 Custom Training Loop Concept
-
-``` mermaid
-flowchart TD
-    A[Get batch] --> B[Clear old gradients]
-    B --> C[Forward pass]
-    C --> D[Compute loss]
-    D --> E[Backpropagate]
-    E --> F[Optimizer step]
-    F --> G[Log loss and metrics]
-    G --> A
-```
-
-A typical PyTorch training step looks like:
-
-``` python
-optimizer.zero_grad()
-predictions = model(inputs)
-loss = criterion(predictions, targets)
-loss.backward()
-optimizer.step()
-```
-
-This is a conceptual template. `criterion`, target shapes, output dimensions, and activation/loss pairing must match the task.
-
----
-
-# 🧪 10. Mini-Project: Compare Regression Losses
-
-## 🎯 Objective
-
-Create a small experiment showing how MSE, MAE, and Huber loss react to an outlier. This helps build intuition for choosing a loss based on the data and business requirement.
-
-## 🪜 Project Steps
-
-1. Create actual target values and predictions.
-2. Add one deliberately large prediction error.
-3. Calculate MSE, MAE, and Huber loss.
-4. Compare the results.
-5. Repeat after removing the outlier.
-6. Explain which objective best matches the application's error costs.
-
-## 💻 Complete Example
+## 19.3 Complete code
 
 ``` python
 import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.linear_model import SGDRegressor
+from sklearn.metrics import mean_absolute_error, mean_squared_error
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 
-def huber_loss(y_true, y_pred, delta=1.0):
-    error = np.asarray(y_true) - np.asarray(y_pred)
-    abs_error = np.abs(error)
+# Reproducible synthetic data
+rng = np.random.default_rng(42)
+X = rng.uniform(-3, 3, size=(300, 1))
+y = 4.0 * X[:, 0] + 2.0 + rng.normal(0, 1.0, size=300)
 
-    per_example_loss = np.where(
-        abs_error <= delta,
-        0.5 * error**2,
-        delta * (abs_error - 0.5 * delta)
+# Add a small number of extreme target outliers
+outlier_indices = rng.choice(len(y), size=8, replace=False)
+y[outlier_indices] += rng.normal(0, 18, size=len(outlier_indices))
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.25, random_state=42
+)
+
+# Scale inputs for stable SGD optimization
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+results = {}
+models = {}
+
+for loss_name in ["squared_error", "absolute_error", "huber"]:
+    model = SGDRegressor(
+        loss=loss_name,
+        max_iter=5000,
+        tol=1e-5,
+        random_state=42,
+        learning_rate="invscaling",
+        eta0=0.01,
     )
-    return np.mean(per_example_loss)
+    model.fit(X_train_scaled, y_train)
+    predictions = model.predict(X_test_scaled)
 
-y_true = np.array([10, 12, 13, 15, 16], dtype=float)
+    results[loss_name] = {
+        "MAE": mean_absolute_error(y_test, predictions),
+        "MSE": mean_squared_error(y_test, predictions),
+    }
+    models[loss_name] = model
 
-# One large error is intentionally included.
-y_pred = np.array([10.5, 11.5, 13.5, 14.5, 40], dtype=float)
+print("Held-out test metrics (lower is better):")
+for name, metrics in results.items():
+    print(
+        f"{name:16s} | "
+        f"MAE={metrics['MAE']:.3f} | MSE={metrics['MSE']:.3f}"
+    )
 
-mse = np.mean((y_true - y_pred) ** 2)
-mae = np.mean(np.abs(y_true - y_pred))
-huber = huber_loss(y_true, y_pred, delta=1.0)
+# Plot predictions for each trained model
+x_line = np.linspace(X.min(), X.max(), 200).reshape(-1, 1)
+x_line_scaled = scaler.transform(x_line)
 
-print(f"MSE:   {mse:.3f}")
-print(f"MAE:   {mae:.3f}")
-print(f"Huber: {huber:.3f}")
+plt.figure(figsize=(9, 6))
+plt.scatter(X_train, y_train, alpha=0.55, label="Training data")
+plt.scatter(X_test, y_test, alpha=0.65, label="Test data")
+
+for name, model in models.items():
+    y_line = model.predict(x_line_scaled)
+    plt.plot(x_line, y_line, label=name)
+
+plt.xlabel("Feature")
+plt.ylabel("Target")
+plt.title("Regression loss comparison with outliers")
+plt.legend()
+plt.tight_layout()
+plt.show()
 ```
 
-## 📊 Expected Interpretation
-
-- **MSE:** The large error contributes disproportionately because it
-is squared.
-- **MAE:** The large error matters linearly, so it is less dominant
-than under MSE.
-- **Huber:** Small errors are treated quadratically while large errors
-are treated approximately linearly.
-- There is no universally best loss. If a large error is genuinely
-costly, MSE may be desirable. If it is a data anomaly, a robust loss may be more appropriate.
-
-## 📝 Suggested Extension
-
-- Plot each per-example loss against absolute error.
-- Try several Huber `delta` values.
-- Normalize or transform the target and observe how the loss scale
-changes.
-- Record the metric used for model selection separately from the
-training loss.
-
----
-
-# 🌍 11. Real-World Use Cases
-
-## 🏠 House Price Prediction
-
-MSE is a common baseline when large price errors should be penalized strongly. MAE is useful when the average absolute difference in currency units is easier to explain to stakeholders.
-
-## 🩺 Medical Image Classification
-
-Cross-entropy is a common starting point for mutually exclusive disease classes. If rare diseases are underrepresented, consider class weights, careful sampling, and per-class recall. Loss optimization does not replace clinical validation.
-
-## 🚗 Autonomous Driving and Road Inspection
-
-Object detectors may combine classification and bounding-box losses. For a pothole detection system, evaluate not only the aggregate loss but also precision, recall, false alarms, missed potholes, localization quality, and performance across weather and lighting conditions.
-
-## 🛒 Recommendation Systems
-
-Pairwise ranking losses can teach a model to score a relevant item above an irrelevant one. The training objective should align with the intended ranking behavior and the evaluation protocol.
-
-## 🗣️ Language Models
-
-Token-level cross-entropy is commonly used to train a model to predict the next token. The loss is generally aggregated over valid target tokens, with padding tokens masked out.
-
-## 🖼️ Image Segmentation
-
-Cross-entropy provides pixel-wise classification supervision, while Dice or IoU-related losses encourage overlap. Combining them can be useful when the foreground occupies a small part of an image.
-
-## 🧬 Representation Learning
-
-Contrastive and triplet losses learn embeddings that preserve useful similarity relationships. Data sampling and the definition of positive and negative pairs strongly affect the result.
-
----
-
-# 🚀 12. Advanced Concepts
-
-## 12.1 Class-Weighted Loss
-
-When some classes are more important or less frequent, a weighted objective can give their errors greater influence.
-
-For class weights $$w_k$$:
-
-$$
-L = -\frac{1}{N}\sum_{i=1}^{N}w_{y_i}\log(p_{i,y_i})
-$$
-
-Weights should be chosen carefully. Excessive weighting can increase false positives or destabilize training. Always inspect per-class precision and recall.
-
-## 12.2 Masked Loss
-
-Some tasks contain invalid, missing, padded, or ignored targets. A mask $$m_i$$ can exclude those entries:
-
-$$
-L_{\text{masked}} = \frac{\sum_i m_i L_i}{\sum_i m_i}
-$$
-
-If the mask is entirely zero, the implementation must handle the denominator safely. Masking should exclude only genuinely invalid targets, not difficult examples that the model should learn from.
-
-## 12.3 Label Smoothing
-
-For a classification target with $$K$$ classes, label smoothing distributes some target probability away from the hard target. One common convention is:
-
-$$
-y'_k = (1-\epsilon)y_k + \frac{\epsilon}{K}
-$$
-
-Where $$\epsilon$$ is a small smoothing factor. Implementations may use slightly different conventions.
-
-**Potential benefits:** Reduced overconfidence and improved generalization in some settings.
-
-**Potential drawbacks:** Too much smoothing can weaken supervision, especially when labels are reliable or classes are fine-grained.
-
-## 12.4 Multi-Task Learning
-
-A model may predict multiple targets, such as object class, bounding box, and depth. A combined loss is:
-
-$$
-L_{\text{total}} = \sum_{j=1}^{M}\lambda_j L_j
-$$
-
-Each $$\lambda_j$$ controls the influence of task $$j$$.
-
-Loss terms may have different scales, gradient magnitudes, and difficulty. A task with a numerically large loss can dominate even when it is not the most important task. Inspect each component and consider principled weighting methods.
-
-## 12.5 Dynamic and Uncertainty-Based Loss Weighting
-
-Instead of manually fixing all task weights, some multi-task methods learn task-dependent weights or adapt weights during training. These approaches can help when tasks have different noise levels, but they introduce assumptions and extra implementation complexity.
-
-## 12.6 Curriculum Learning and Hard-Example Mining
-
-- **Curriculum learning:** Starts with easier examples or simpler
-tasks and gradually introduces harder ones.
-- **Hard-example mining:** Gives more attention to examples the model
-currently handles poorly.
-- **Focal loss:** A loss-level mechanism that reduces the contribution
-of well-classified examples.
-
-These methods are related but not interchangeable. Hard examples may be informative, mislabeled, ambiguous, or out-of-distribution; inspect them rather than assuming all hard examples deserve more weight.
-
-## 12.7 Loss Scaling and Mixed Precision
-
-Mixed-precision training can improve speed and memory efficiency. Some low-precision gradients may underflow, so frameworks may use loss scaling. Loss scaling changes numerical representation during gradient computation; it does not change the conceptual learning objective when handled correctly.
-
-## 12.8 Numerical Stability
-
-Common safeguards include:
-
-- Use logits-aware cross-entropy implementations.
-- Avoid manually computing `log(0)`.
-- Use stable `logsumexp` or framework equivalents.
-- Check for NaN and infinite loss values.
-- Keep target and prediction shapes aligned.
-- Use appropriate floating-point precision.
-- Verify that masked or weighted reductions have safe denominators.
-
-## 12.9 Training Loss vs. Validation Loss
-
-Training loss measures fit to training examples. Validation loss measures performance on held-out data used for model selection.
-
-``` mermaid
-flowchart LR
-    A[Training loss decreases] --> B{Validation loss}
-    B -->|Also decreases| C[Generalization may be improving]
-    B -->|Plateaus| D[Consider tuning or early stopping]
-    B -->|Increases repeatedly| E[Possible overfitting]
-```
-
-A growing gap between training and validation loss can indicate overfitting, but data distribution shifts, noisy labels, regularization, and different training/validation processing can also affect the curves.
-
-## 12.10 Loss Is Not the Same as Business Success
-
-A lower training loss does not guarantee a better real-world model. Select and monitor evaluation measures that match the application, such as recall at a chosen false-positive rate, calibration, latency, robustness, or ranking quality.
-
----
-
-# ✅ 13. Best Practices
-
-1. **Match the loss to the task.** Determine whether the output is
-continuous, binary, multi-class, multi-label, a mask, a box, or an embedding.
-2. **Match the loss to the output representation.** Check whether it
-expects logits, probabilities, or scores.
-3. **Match labels to the loss.** One-hot vectors, integer class IDs,
-binary vectors, and continuous targets are not interchangeable.
-4. **Start with a reliable baseline.** MSE/MAE for regression and
-cross-entropy for classification are useful starting points.
-5. **Inspect the target distribution.** Check skew, outliers, label
-noise, class imbalance, and missing values.
-6. **Track task-relevant metrics.** Classification accuracy alone can
-be misleading on imbalanced datasets.
-7. **Inspect per-class results.** Use confusion matrices, class-level
-precision and recall, and representative error examples.
-8. **Monitor both training and validation loss.** Do not select a model
-using training loss alone.
-9. **Tune weighting carefully.** Class weights and multi-task weights
-can improve one behavior while harming another.
-10. **Use numerically stable built-in losses.** Especially for
-cross-entropy and log-based objectives.
-11. **Check reduction behavior.** Mean, sum, masking, and weighting
-change gradient scale.
-12. **Set random seeds and record configurations.** Reproducibility
-matters when comparing loss functions.
-13. **Evaluate on untouched test data only after model selection.**
-Avoid repeatedly tuning against the test set.
-14. **Validate real-world costs.** The best loss is the one that
-supports the intended outcome, not necessarily the most familiar formula.
-
----
-
-# ⚠️ 14. Common Mistakes
-
------------------------------------------------------------------------ Mistake                 Why it is a problem     Better practice ----------------------- ----------------------- ----------------------- Applying softmax before Applies the             Pass raw logits to the a logits-based          transformation twice or logits-aware loss cross-entropy loss      violates the loss input contract
-
-Using categorical CE    Shape/type mismatch or  Use sparse CE for with the wrong target   incorrect objective     integer IDs or format                                          categorical CE for one-hot/distribution targets, as required
-
-Using softmax for       Forces class            Use independent independent multi-label probabilities to        sigmoid-style outputs targets                 compete and sum to one  with BCE
-
-Using MSE for every     May not match target    Select based on task problem                 distribution or error   and statistical costs                   assumptions
-
-Ignoring outliers       A few observations may  Investigate outliers dominate MSE            and consider MAE/Huber if appropriate
-
-Treating accuracy as    Accuracy is usually not Train with a the loss                a useful differentiable differentiable loss and objective               evaluate accuracy separately
-
-Comparing raw losses    Their scales and        Compare task metrics from different          meanings differ         and interpret each loss objectives as if                                in context directly equivalent
-
-Ignoring class          Aggregate loss/accuracy Use class-level metrics imbalance               may hide poor           and consider weighting minority-class          or sampling performance
-
-Wrong tensor shapes     Broadcasting can        Check shapes and dtypes silently produce an     before training unintended calculation
-
-Wrong label range       Invalid class IDs can   Validate targets cause errors or         against the number of incorrect results       classes
-
-Ignoring loss reduction Gradient scale can      Understand mean/sum and change with batch size  weighted reduction semantics
-
-Overweighting rare      Can lead to too many    Tune weights on classes                 false positives         validation data
-
-Tuning on test data     Makes test results      Use training/validation optimistic and          for decisions; test unreliable              once at the end
-
-Assuming lower loss     Loss may not reflect    Track always means better     safety, calibration, or application-specific deployment performance  business requirements   metrics and robustness -----------------------------------------------------------------------
-
----
-
-# 🎤 15. Interview Questions and Points
+## 19.4 What to observe
+
+-   Squared-error training can be more influenced by extreme target
+    values.
+-   Absolute-error training focuses on absolute deviations and is often
+    more robust to outliers.
+-   Huber loss transitions between squared and absolute penalties.
+-   Results vary with the random sample, outliers, hyperparameters, and
+    optimization settings.
+
+The printed MAE and MSE are evaluation metrics, not the training
+objectives for every model. Do not expect one loss to win on every
+metric. For a fair study, repeat with multiple seeds and report averages
+and variation.
+
+## 19.5 Suggested extensions
+
+-   Repeat the experiment without outliers.
+-   Vary the number and magnitude of outliers.
+-   Compare models using cross-validation.
+-   Try target scaling and compare convergence.
+-   Plot training objective across iterations if supported by the
+    estimator.
+-   Record results in a Markdown table and explain which error behavior
+    matters for the use case.
+
+# 20. 🎤 Interview Questions and Key Answers
 
 ## Q1. What is a loss function?
 
-A loss function measures the mismatch between model predictions and target values. Its gradients guide parameter updates during training.
+A mathematical function that quantifies the difference between a model's
+prediction and the target according to a chosen objective.
 
-## Q2. What is the difference between a loss function and an evaluation metric?
+## Q2. Why is a loss function important in deep learning?
 
-A loss is the objective optimized during training. A metric measures performance for interpretation or model selection and may not be differentiable.
+It defines the training objective and provides the signal from which
+gradients are computed to update model parameters.
 
-## Q3. Why is MSE sensitive to outliers?
+## Q3. What is the difference between MSE and MAE?
 
-MSE squares errors, so large deviations contribute disproportionately to the total loss.
+MSE squares errors and strongly penalizes large deviations. MAE uses
+absolute errors and is generally less sensitive to outliers.
 
-## Q4. What is the difference between MAE and MSE?
+## Q4. When would you use Huber loss?
 
-MAE penalizes errors linearly and is more robust to outliers. MSE penalizes errors quadratically and emphasizes large errors more strongly.
+When you want squared-error behavior for small errors and a less
+aggressive, linear penalty for large errors.
 
-## Q5. When would you use Huber loss?
+## Q5. What is cross-entropy loss?
 
-When small errors should receive a smooth quadratic penalty but large errors should not dominate as strongly as they would under MSE.
+A loss based on negative log-likelihood that penalizes the model for
+assigning low probability to the correct categorical or binary target.
 
-## Q6. Why is cross-entropy popular for classification?
+## Q6. What is the difference between categorical and sparse categorical cross-entropy?
 
-It is tied to maximum-likelihood estimation for categorical or Bernoulli targets and strongly penalizes assigning low probability to the true class.
+They represent the same standard multi-class objective, but categorical
+cross-entropy commonly uses one-hot targets while sparse categorical
+cross-entropy uses integer class IDs.
 
-## Q7. What is the difference between binary and categorical cross-entropy?
+## Q7. Why do frameworks provide cross-entropy losses that accept logits?
 
-Binary cross-entropy handles a binary target or independent labels. Categorical cross-entropy handles mutually exclusive classes represented by a class distribution; sparse categorical CE commonly accepts integer class IDs.
+Combining the required transformations with the loss calculation
+improves numerical stability and avoids unnecessary intermediate
+probability calculations.
 
-## Q8. Why do frameworks provide cross-entropy losses that accept logits?
+## Q8. What is focal loss?
 
-They can combine the necessary activation and logarithmic operations in a numerically stable way.
+A modified cross-entropy objective that reduces the contribution of
+well-classified examples, often useful in imbalanced detection tasks.
 
-## Q9. What is focal loss?
+## Q9. Can training loss decrease while accuracy remains unchanged?
 
-A loss that down-weights well-classified examples and focuses more on hard examples, often used in imbalanced detection and classification.
+Yes. The model may improve the confidence of predictions without
+changing the predicted class, or the loss and accuracy may respond
+differently to changes in probabilities.
 
-## Q10. What is Dice loss used for?
+## Q10. Why can validation loss increase while training loss decreases?
 
-It encourages overlap between predicted and target regions and is commonly used for segmentation, especially with imbalanced foreground/background pixels.
+This can indicate overfitting, although distribution differences and
+other training issues are also possible.
 
-## Q11. What is KL divergence?
+## Q11. Is accuracy a loss function?
 
-A directional measure of difference between probability distributions, used in distribution matching, variational learning, and knowledge distillation.
+Usually accuracy is an evaluation metric, not the objective used for
+gradient-based optimization, because the discrete argmax-based measure
+is not a useful differentiable training objective in its standard form.
 
-## Q12. Why can training loss decrease while validation loss increases?
+## Q12. What is a composite loss?
 
-The model may be overfitting training data or the validation distribution may differ. The pattern should be investigated rather than interpreted in isolation.
+An objective formed by combining two or more losses, often with weights,
+such as classification and bounding-box regression losses in object
+detection.
 
-## Q13. Can a loss function be negative?
+## Q13. How do you handle class imbalance?
 
-Yes, depending on the definition and terms involved. Some common losses such as MSE and cross-entropy are nonnegative under their standard assumptions, while other objectives or likelihood-based expressions can take negative values.
+Possible approaches include class-weighted loss, focal loss, sampling
+strategies, collecting more data, and evaluating per-class metrics. The
+choice should be validated rather than assumed to help.
 
-## Q14. What is a composite loss?
+## Q14. Does a lower loss always mean a better model?
 
-A weighted combination of multiple objectives, such as classification plus box regression or reconstruction plus KL divergence.
+No. The loss may not align with the real objective, and lower training
+loss can accompany overfitting or poor performance on important
+subgroups.
 
-## Q15. How do you choose a loss for an imbalanced dataset?
+## Q15. What is the relationship between loss and backpropagation?
 
-Start by understanding the task and error costs. Consider class weighting, focal loss, sampling, and appropriate metrics, then validate the trade-offs. No single technique works best in every case.
+Backpropagation calculates derivatives of the loss with respect to model
+parameters. An optimizer uses these gradients to update the parameters.
 
-## Q16. What is label smoothing?
+# 21. ⚡ Quick Revision
 
-A technique that softens hard class targets by distributing a small amount of target probability across classes.
+## 21.1 Key points
 
-## Q17. Why is the reduction method important?
+-   A loss function measures prediction error according to a chosen
+    objective.
+-   The loss supplies the training signal; backpropagation calculates
+    gradients and the optimizer updates parameters.
+-   MSE heavily penalizes large errors; MAE is more robust to outliers;
+    Huber combines both behaviors.
+-   Binary cross-entropy is common for binary and multi-label tasks.
+-   Categorical cross-entropy is common for mutually exclusive
+    multi-class classification.
+-   Logits are raw scores; stable framework losses can handle activation
+    and loss calculations together.
+-   Focal loss can emphasize difficult examples; class weights can
+    change the relative importance of classes.
+-   Segmentation, detection, and metric learning often use specialized
+    or composite losses.
+-   Always inspect validation performance and task-specific metrics, not
+    just training loss.
+-   Correct output shape, target format, reduction, and numerical
+    stability are essential.
 
-It determines how per-example losses are aggregated. Mean and sum reductions can produce different gradient scales, particularly when batch sizes vary.
+## 21.2 Important formulas
 
-## Q18. Is lower loss always better?
+  ---------------------------------------------------------------------------------------------
+  Name                                Formula
+  ----------------------------------- ---------------------------------------------------------
+  MSE                                 $$\frac{1}{N}\sum_{i=1}^{N}(y_i-\hat{y}_i)^2$$
 
-Only when comparing the same objective under comparable conditions. Lower loss does not necessarily imply better calibration, robustness, or application-level performance.
+  MAE                                 $$\frac{1}{N}\sum_{i=1}^{N}|y_i-\hat{y}_i|$$
 
-## 🧠 Interview Formula Sheet
+  RMSE                                $$\sqrt{\frac{1}{N}\sum_{i=1}^{N}(y_i-\hat{y}_i)^2}$$
 
---------------------------------------------------------------------------------------------- Concept                             Formula ----------------------------------- --------------------------------------------------------- MSE                                 $$\frac{1}{N}\sum_i(y_i-\hat{y}_i)^2$$
+  Binary cross-entropy                $$-\left[y\log(p)+(1-y)\log(1-p)\right]$$
 
-MAE                                 $$\frac{1}{N}\sum_i|y_i-\hat{y}_i|$$
+  Categorical cross-entropy           $$-\sum_{k=1}^{K}y_k\log(p_k)$$
 
-Binary cross-entropy                $$-\frac{1}{N}\sum_i[y_i\log p_i+(1-y_i)\log(1-p_i)]$$
+  Hinge loss                          $$\max(0,1-yf(x))$$
 
-Categorical cross-entropy           $$-\frac{1}{N}\sum_i\sum_k y_{ik}\log p_{ik}$$
+  Triplet loss                        $$\max(0,d(a,p)-d(a,n)+m)$$
 
-Hinge loss                          $$\max(0,1-yf(x))$$
+  Regularized objective               $$L_{\text{data}}+\lambda R(\theta)$$
 
-KL divergence                       $$\sum_iP(i)\log\frac{P(i)}{Q(i)}$$
+  Gradient descent                    $$\theta_{t+1}=\theta_t-\eta\nabla_\theta J(\theta_t)$$
+  ---------------------------------------------------------------------------------------------
 
-Gradient descent                    $$\theta_{t+1}=\theta_t-\eta\nabla_\theta J(\theta_t)$$ ---------------------------------------------------------------------------------------------
+## 21.3 Common implementation patterns
 
----
+``` python
+# TensorFlow / Keras examples
+tf.keras.losses.MeanSquaredError()
+tf.keras.losses.MeanAbsoluteError()
+tf.keras.losses.Huber()
+tf.keras.losses.BinaryCrossentropy(from_logits=True)
+tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
+```
 
-# ⚡ 16. Quick Revision
+``` python
+# PyTorch examples
+nn.MSELoss()
+nn.L1Loss()
+nn.HuberLoss()
+nn.BCEWithLogitsLoss()
+nn.CrossEntropyLoss()
+```
 
-## 🔑 Key Points
+Check your installed framework version and its documentation because
+APIs and defaults can change.
 
-- A loss function quantifies prediction error and defines the training
-objective.
-- Backpropagation computes gradients of the loss; the optimizer uses
-them to update parameters.
-- **Regression:** MSE emphasizes large errors; MAE is more robust to
-outliers; Huber combines quadratic and linear behavior.
-- **Binary classification:** Binary cross-entropy is a common
-baseline.
-- **Multi-class classification:** Categorical or sparse categorical
-cross-entropy is common.
-- **Multi-label classification:** Use an independent binary objective
-for each label.
-- **Segmentation:** Cross-entropy, Dice, IoU, and combinations are
-common.
-- **Object detection:** Losses usually combine classification and
-localization terms.
-- **Metric learning:** Contrastive and triplet losses organize
-embedding spaces.
-- **Advanced learning:** KL divergence, focal loss, label smoothing,
-masking, and multi-task weighting address specific needs.
-- A lower loss does not guarantee better real-world performance.
-- Always verify logits/probabilities, target formats, tensor shapes,
-reduction, and task-specific evaluation metrics.
-
-## 🧾 Important Formulas
-
-### Mean Squared Error
-
-$$
-L_{\text{MSE}} = \frac{1}{N}\sum_{i=1}^{N}(y_i-\hat{y}_i)^2
-$$
-
-### Mean Absolute Error
-
-$$
-L_{\text{MAE}} = \frac{1}{N}\sum_{i=1}^{N}|y_i-\hat{y}_i|
-$$
-
-### Binary Cross-Entropy
-
-$$
-L_{\text{BCE}} = -\frac{1}{N}\sum_{i=1}^{N}[y_i\log(p_i)+(1-y_i)\log(1-p_i)]
-$$
-
-### Categorical Cross-Entropy
-
-$$
-L_{\text{CCE}} = -\frac{1}{N}\sum_{i=1}^{N}\sum_{k=1}^{K}y_{ik}\log(p_{ik})
-$$
-
-### Gradient Descent Update
-
-$$
-\theta_{t+1} = \theta_t - \eta\nabla_\theta J(\theta_t)
-$$
-
-## 🗺️ Visual Learning Roadmap
+## 21.4 Visual summary / roadmap
 
 ``` mermaid
 flowchart TD
-    A[Understand prediction task] --> B[Identify target format]
-    B --> C[Choose a suitable loss]
-    C --> D[Match activation and loss inputs]
-    D --> E[Check shapes, labels, and reduction]
-    E --> F[Train with backpropagation]
-    F --> G[Monitor training and validation loss]
-    G --> H[Evaluate task-specific metrics]
-    H --> I[Inspect errors and tune responsibly]
+    A[Define task and target] --> B[Choose a compatible loss]
+    B --> C[Match output and target formats]
+    C --> D[Compute batch loss]
+    D --> E[Backpropagate gradients]
+    E --> F[Optimizer updates parameters]
+    F --> G[Monitor training and validation]
+    G --> H{Generalizes well?}
+    H -- No --> I[Inspect data, metrics, scaling, and regularization]
+    I --> B
+    H -- Yes --> J[Final evaluation on held-out test set]
 ```
 
-## 🧠 One-Minute Summary
+## 21.5 Final takeaway
 
-A neural network makes predictions, a loss function measures how wrong they are, backpropagation calculates how the loss changes with the parameters, and an optimizer updates those parameters. The correct loss depends on the task, target distribution, data quality, and real-world cost of errors. Begin with a well-established baseline, verify the model/loss interface, monitor validation behavior, and choose the final model using metrics that reflect the intended application.
-
----
-
-## 📚 Further Learning
-
-- TensorFlow/Keras loss functions:
-https://www.tensorflow.org/api_docs/python/tf/keras/losses
-- PyTorch loss functions:
-https://pytorch.org/docs/stable/nn.html#loss-functions
-- Scikit-learn model evaluation:
-https://scikit-learn.org/stable/modules/model_evaluation.html
-
-> **Final reminder:** A loss function is not just a formula to memorize.
-> Understand what errors it penalizes, which assumptions it makes, and
-> whether those priorities match your problem.
+**Choose a loss function that matches the task, target representation,
+and cost of mistakes.** Implement it with the correct output and label
+formats, train using stable gradient-based optimization, and judge the
+final model using validation and test metrics that reflect the
+real-world goal.
